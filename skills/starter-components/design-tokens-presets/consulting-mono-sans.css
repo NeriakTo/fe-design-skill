@@ -1,0 +1,39 @@
+/* ============================================================
+ * consulting-mono-sans.css — fe-design v1.4 §24.2 方案 B（預設）
+ *
+ * 全黑體 + 字重對比（中文簡報通用，預設首選）
+ *
+ * 字體配對基本法則（justfont / TeSA / BFA / 思源黑體官方）：
+ * ✅ 同字族不同字重做標題/內文對比
+ * ✅ 黑體配 sans-serif（中文界基本法則）
+ * ❌ 禁止「明體標題 + 黑體內文」混搭
+ *
+ * 適用：中文簡報 / consulting deck / page mode 預設
+ * 反面案例：英文受眾為主時改用 mixed-bilingual.css（方案 A）
+ * ============================================================ */
+
+:root {
+  /* Typography — 字族 */
+  --font-display: 'Inter', 'Noto Sans TC', system-ui, sans-serif;
+  --font-body: 'Inter', 'Noto Sans TC', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Source Code Pro', monospace;
+
+  /* Typography — 字級五級（hero / h1 / h2 / body / caption）*/
+  --fs-hero: 56px;
+  --fs-h1: 40px;
+  --fs-h2: 28px;
+  --fs-body: 16px;
+  --fs-caption: 12px;
+
+  /* Typography — 字重五級（同字族字重對比） */
+  --fw-hero: 900;
+  --fw-h1: 800;
+  --fw-h2: 700;
+  --fw-body: 400;
+  --fw-caption: 500;
+
+  /* Typography — 行高 */
+  --lh-tight: 1.15;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.75;
+}

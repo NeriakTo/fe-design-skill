@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charts Demo — 7 Components</title>
+<link rel="stylesheet" href="../../design-tokens-presets/mckinsey-consulting.css">
+<link rel="stylesheet" href="../charts/charts.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body,system-ui,sans-serif);background:#f8fafc;color:var(--color-text,#1a1a1a);padding:40px}
+h1{font-size:28px;margin-bottom:8px}
+.subtitle{font-size:14px;color:var(--color-text-muted,#666);margin-bottom:40px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(500px,1fr));gap:32px}
+.card{background:#fff;border-radius:12px;padding:24px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.card h2{font-size:18px;margin-bottom:4px}
+.card .api{font-size:11px;color:var(--color-text-faint,#999);margin-bottom:16px;font-family:monospace}
+.card .chart-wrap{display:flex;justify-content:center;align-items:center;min-height:200px}
+.full-width{grid-column:1/-1}
+</style>
+</head>
+<body>
+<h1>Charts Demo</h1>
+<p class="subtitle">7 chart scaffolds — fe-design v1.4 (pie/bar/kpi) + v1.5 (gantt/waterfall/matrix/process_flow)</p>
+
+<div class="grid" id="charts"></div>
+
+<script type="module">
+import { PieChart } from '../charts/pie_chart.mjs';
+import { BarChart } from '../charts/bar_chart.mjs';
+import { KpiCard } from '../charts/kpi_card.mjs';
+import { GanttChart } from '../charts/gantt_chart.mjs';
+import { WaterfallChart } from '../charts/waterfall_chart.mjs';
+import { MatrixChart } from '../charts/matrix_chart.mjs';
+import { ProcessFlow } from '../charts/process_flow.mjs';
+
+const container = document.getElementById('charts');
+
+const charts = [
+  {
+    title: 'PieChart',
+    api: 'PieChart({ data, size, showLegend, showPercent, valueFormat })',
+    html: PieChart({
+      data: [
+        { label: '製造業', value: 42 },
+        { label: '科技業', value: 28 },
+        { label: '金融業', value: 18 },
+        { label: '其他', value: 12 },
+      ],
+      size: 280,
+      showLegend: true,
+      showPercent: true,
+    }),
+  },
+  {
+    title: 'BarChart (vertical)',
+    api: "BarChart({ data, orientation:'v', width, height })",
+    html: BarChart({
+      data: [
+        { label: 'Q1', value: 120 },
+        { label: 'Q2', value: 85 },
+        { label: 'Q3', value: 145 },
+        { label: 'Q4', value: 110 },
+      ],
+      orientation: 'v',
+      width: 400,
+      height: 280,
+    }),
+  },
+  {
+    title: 'BarChart (horizontal)',
+    api: "BarChart({ data, orientation:'h', width, height })",
+    html: BarChart({
+      data: [
+        { label: '台北', value: 320 },
+        { label: '台中', value: 180 },
+        { label: '高雄', value: 240 },
+        { label: '新竹', value: 150 },
+      ],
+      orientation: 'h',
+      width: 400,
+      height: 240,
+    }),
+  },
+  {
+    title: 'KpiCard (3 variants)',
+    api: "KpiCard({ value, prefix, suffix, label, change, changeDirection })",
+    html: `<div style="display:flex;gap:16px;flex-wrap:wrap">
+      ${KpiCard({ value: '2,847', suffix: '件', label: '月訂單數', change: 12.5, changeDirection: 'up', comparator: 'vs 上月' })}
+      ${KpiCard({ value: '87.3', suffix: '%', label: '良率', change: -2.1, changeDirection: 'down', comparator: 'vs 目標' })}
+      ${KpiCard({ value: '4.2', suffix: 'hr', label: '平均交期', change: 0, changeDirection: 'neutral' })}
+    </div>`,
+    fullWidth: true,
+  },
+  {
+    title: 'GanttChart',
+    api: 'GanttChart({ tasks, width, showToday })',
+    html: GanttChart({
+      tasks: [
+        { label: '需求分析', start: '2026-05-01', end: '2026-05-07', progress: 1.0 },
+        { label: '系統設計', start: '2026-05-05', end: '2026-05-14', progress: 0.6 },
+        { label: '前端開發', start: '2026-05-12', end: '2026-05-28' },
+        { label: '後端開發', start: '2026-05-12', end: '2026-06-01' },
+        { label: '整合測試', start: '2026-05-26', end: '2026-06-05' },
+        { label: '部署上線', start: '2026-06-03', end: '2026-06-07' },
+      ],
+      width: 680,
+      showToday: true,
+      todayLabel: 'Today',
+    }),
+    fullWidth: true,
+  },
+  {
+    title: 'WaterfallChart (with total)',
+    api: "WaterfallChart({ data: [{label,value,type?}], width, height })",
+    html: WaterfallChart({
+      data: [
+        { label: 'Q1 營收', value: 100 },
+        { label: 'Q2 營收', value: -30 },
+        { label: 'H1 小計', value: 0, type: 'total' },
+        { label: 'Q3 營收', value: 50 },
+        { label: 'Q4 營收', value: 30 },
+        { label: '全年合計', value: 0, type: 'total' },
+      ],
+      width: 520,
+      height: 320,
+    }),
+  },
+  {
+    title: 'MatrixChart (with empty cells)',
+    api: 'MatrixChart({ cells, rowLabels, colLabels })',
+    html: MatrixChart({
+      rowLabels: ['高影響', '中影響', '低影響'],
+      colLabels: ['高可行性', '中可行性', '低可行性'],
+      cells: [
+        { row: 0, col: 0, label: 'AI 自動排程' },
+        { row: 0, col: 1, label: 'IoT 即時監控' },
+        { row: 1, col: 0, label: 'RPA 報表' },
+        { row: 1, col: 2, label: '區塊鏈溯源' },
+        { row: 2, col: 1, label: 'AR 維修指導' },
+      ],
+      width: 440,
+    }),
+  },
+  {
+    title: 'ProcessFlow',
+    api: "ProcessFlow({ steps: [{label,description?,status?}], direction })",
+    html: ProcessFlow({
+      steps: [
+        { label: '需求收集', description: 'Spec 撰寫', status: 'done' },
+        { label: '設計審查', description: '設計團隊 Review', status: 'done' },
+        { label: '開發實作', description: 'Phase A+B', status: 'active' },
+        { label: '整合測試', description: 'E2E 驗證', status: 'pending' },
+        { label: '正式部署', description: 'Production', status: 'pending' },
+      ],
+      direction: 'horizontal',
+    }),
+    fullWidth: true,
+  },
+];
+
+charts.forEach(({ title, api, html, fullWidth }) => {
+  const card = document.createElement('div');
+  card.className = `card${fullWidth ? ' full-width' : ''}`;
+  card.innerHTML = `<h2>${title}</h2><p class="api">${api}</p><div class="chart-wrap">${html}</div>`;
+  container.appendChild(card);
+});
+</script>
+</body>
+</html>

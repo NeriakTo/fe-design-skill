@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<style>
+  :root {
+    --bg: #FAFAF8;
+    --fg: #0E1116;
+    --muted: #5A5750;
+    --border: #D4D2CE;
+    --accent: #1B365D;
+    --warn-bg: #FCE7E7;
+    --warn-fg: #8B1F1F;
+    --ok-bg: #E5F2EA;
+    --ok-fg: #0F5132;
+    --skip-bg: #F1EFEC;
+    --skip-fg: #6B655A;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Noto Sans TC", "PingFang TC", system-ui, sans-serif;
+    background: var(--bg); color: var(--fg);
+    margin: 0; padding: 32px;
+  }
+  h1 { font-size: 24px; font-weight: 800; margin: 0 0 4px; }
+  .subtitle { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+  .summary-bar {
+    background: #fff; border: 1px solid var(--border); border-radius: 8px;
+    padding: 16px 20px; margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 24px;
+  }
+  .stat { font-size: 13px; color: var(--muted); }
+  .stat strong { color: var(--fg); font-size: 16px; font-weight: 700; margin-right: 6px; }
+  .stat.warn strong { color: var(--warn-fg); }
+  table {
+    border-collapse: collapse; width: 100%; max-width: 2400px; margin: 0 auto;
+    background: #fff; border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+  }
+  th, td { vertical-align: top; padding: 12px; border-bottom: 1px solid var(--border); }
+  th {
+    background: var(--accent); color: var(--bg); text-align: left;
+    font-weight: 600; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  td.idx { width: 80px; font-weight: 700; font-size: 18px; color: var(--fg); padding-top: 18px; }
+  td.metrics { width: 220px; font-size: 12px; color: var(--muted); padding-top: 18px; }
+  td.metrics .ratio { font-size: 18px; font-weight: 700; color: var(--fg); display: block; margin-bottom: 4px; }
+  td.metrics .ratio.warn { color: var(--warn-fg); }
+  td.metrics .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 11px;
+    font-weight: 600; letter-spacing: 0.04em; margin-top: 4px;
+  }
+  .badge.ok { background: var(--ok-bg); color: var(--ok-fg); }
+  .badge.warn { background: var(--warn-bg); color: var(--warn-fg); }
+  .badge.skip { background: var(--skip-bg); color: var(--skip-fg); }
+  td.shot { padding: 8px; }
+  td.shot img {
+    width: 100%; max-width: 720px; border: 1px solid var(--border);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04); display: block;
+  }
+  td.shot .placeholder {
+    width: 100%; aspect-ratio: 16 / 9; background: var(--skip-bg);
+    color: var(--skip-fg); display: flex; align-items: center; justify-content: center;
+    font-size: 13px; border: 1px dashed var(--border); border-radius: 4px;
+  }
+  td.shot .label { font-size: 11px; color: var(--muted); margin-top: 4px; letter-spacing: 0.04em; text-transform: uppercase; }
+  footer { color: var(--muted); font-size: 11px; margin-top: 24px; text-align: right; }
+</style>
+</head>
+<body>
+  <h1 id="title-h1">{{TITLE}}</h1>
+  <p class="subtitle" id="subtitle"></p>
+  <div class="summary-bar" id="summary-bar"></div>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Metrics</th>
+        <th id="th-base">Base</th>
+        <th id="th-target">Target</th>
+        <th>Diff</th>
+      </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+  <footer>visual-diff.mjs · fe-design v1.4-short §24.4 P6.3 · pixelmatch threshold reported in summary</footer>
+
+<script id="summary-data" type="application/json">{{SUMMARY_JSON}}</script>
+<script>
+(function () {
+  const dataNode = document.getElementById('summary-data');
+  if (!dataNode) return;
+  let data;
+  try {
+    data = JSON.parse(dataNode.textContent);
+  } catch (e) {
+    document.body.insertAdjacentHTML('afterbegin', '<pre style="color:#8B1F1F">summary JSON 解析失敗：' + e.message + '</pre>');
+    return;
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function fmtPct(r) {
+    if (r == null || isNaN(r)) return '—';
+    if (r === 0) return '0%';
+    if (r < 0.0001) return (r * 100).toFixed(4) + '%';
+    if (r < 0.01) return (r * 100).toFixed(3) + '%';
+    return (r * 100).toFixed(2) + '%';
+  }
+
+  function fmtInt(n) {
+    if (n == null || isNaN(n)) return '—';
+    return Number(n).toLocaleString('en-US');
+  }
+
+  // Subtitle
+  const sub = [
+    'Generated ' + escapeHtml(data.generated_at),
+    'viewport ' + (data.viewport ? data.viewport.width + '×' + data.viewport.height : 'n/a'),
+    'pixelmatch threshold ' + escapeHtml(String(data.threshold)),
+    'warn @ ' + fmtPct(data.diff_ratio_warn),
+  ].join(' · ');
+  document.getElementById('subtitle').textContent = sub;
+
+  // Base / Target headers
+  const baseLabel = (data.base && data.base.label) || 'base';
+  const targetLabel = (data.target && data.target.label) || 'target';
+  document.getElementById('th-base').textContent = 'Base — ' + baseLabel;
+  document.getElementById('th-target').textContent = 'Target — ' + targetLabel;
+
+  // Summary bar
+  const s = data.summary || {};
+  const summaryHtml = [
+    '<span class="stat"><strong>' + (s.pages_total || 0) + '</strong>pages total</span>',
+    '<span class="stat ' + ((s.pages_warned || 0) > 0 ? 'warn' : '') + '"><strong>' + (s.pages_warned || 0) + '</strong>warned (>' + fmtPct(data.diff_ratio_warn) + ')</span>',
+    '<span class="stat"><strong>' + (s.pages_skipped || 0) + '</strong>skipped</span>',
+    '<span class="stat"><strong>' + fmtPct(s.max_mismatch_ratio || 0) + '</strong>max diff ratio</span>',
+  ].join('');
+  document.getElementById('summary-bar').innerHTML = summaryHtml;
+
+  // Rows
+  const tbody = document.getElementById('tbody');
+  const pages = Array.isArray(data.pages) ? data.pages : [];
+  const rows = pages.map(function (p) {
+    const num = String(p.index).padStart(2, '0');
+    let badge;
+    if (p.skipped) {
+      badge = '<span class="badge skip">SKIP</span>';
+    } else if (p.warn) {
+      badge = '<span class="badge warn">WARN</span>';
+    } else {
+      badge = '<span class="badge ok">OK</span>';
+    }
+    const ratioCls = p.warn ? 'ratio warn' : 'ratio';
+    const metricsBody = p.skipped
+      ? '<span class="ratio">—</span><span style="font-size:11px">' + escapeHtml(p.skipped_reason || 'skipped') + '</span><br>' + badge
+      : '<span class="' + ratioCls + '">' + fmtPct(p.mismatch_ratio) + '</span>'
+        + fmtInt(p.mismatch_px) + ' / ' + fmtInt(p.total_px) + ' px<br>' + badge;
+
+    function shotCell(path, labelText) {
+      if (!path) {
+        return '<td class="shot"><div class="placeholder">no shot</div><div class="label">' + escapeHtml(labelText) + '</div></td>';
+      }
+      return '<td class="shot"><img src="' + escapeHtml(path) + '" loading="lazy" alt="' + escapeHtml(labelText + ' slide ' + num) + '"><div class="label">' + escapeHtml(labelText) + ' · slide-' + num + '.png</div></td>';
+    }
+
+    return '<tr>'
+      + '<td class="idx">' + num + '</td>'
+      + '<td class="metrics">' + metricsBody + '</td>'
+      + shotCell(p.base_path, baseLabel)
+      + shotCell(p.target_path, targetLabel)
+      + shotCell(p.diff_path, 'diff overlay')
+      + '</tr>';
+  }).join('');
+  tbody.innerHTML = rows;
+
+  // <title> & h1 client-side fallback：若 template 被當靜態 (server placeholder 沒被替換) 開啟，根據 summary 補回標題
+  // 用字串拼接避開 server-side `{{TITLE}}` 全域 replace 觸發，這段 sentinel 必須維持 raw `{{TITLE}}` 字面才能比對
+  if (data && data.base && data.target) {
+    const sentinel = '{' + '{TITLE}}';
+    const t = baseLabel + ' vs ' + targetLabel;
+    if (document.title === sentinel) document.title = 'Visual Diff — ' + t;
+    const h1 = document.getElementById('title-h1');
+    if (h1 && h1.textContent === sentinel) h1.textContent = 'Visual Diff — ' + t;
+  }
+})();
+</script>
+</body>
+</html>

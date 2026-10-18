@@ -1,0 +1,52 @@
+{
+  "per_slide_stats": [
+    {
+      "slide": 1,
+      "semantic_elements": 2,
+      "fallback_elements": 0,
+      "semantic_ratio": 1,
+      "core_text_semantic": true,
+      "stacking_contexts_count": 0,
+      "max_nesting_depth": 0,
+      "transform_elements": 0,
+      "transform_screenshot_fallbacks": 0,
+      "rich_text_elements": 2,
+      "total_inline_runs": 2,
+      "bordered_elements": 0,
+      "border_mapped": 0,
+      "border_skipped_asymmetric": 0
+    },
+    {
+      "slide": 2,
+      "semantic_elements": 3,
+      "fallback_elements": 1,
+      "semantic_ratio": 0.75,
+      "core_text_semantic": true,
+      "stacking_contexts_count": 0,
+      "max_nesting_depth": 0,
+      "transform_elements": 0,
+      "transform_screenshot_fallbacks": 0,
+      "rich_text_elements": 3,
+      "total_inline_runs": 3,
+      "bordered_elements": 0,
+      "border_mapped": 0,
+      "border_skipped_asymmetric": 0
+    },
+    {
+      "slide": 3,
+      "semantic_elements": 6,
+      "fallback_elements": 1,
+      "semantic_ratio": 0.857,
+      "core_text_semantic": true,
+      "stacking_contexts_count": 5,
+      "max_nesting_depth": 2,
+      "transform_elements": 0,
+      "transform_screenshot_fallbacks": 0,
+      "rich_text_elements": 3,
+      "total_inline_runs": 3,
+      "bordered_elements": 0,
+      "border_mapped": 0,
+      "border_skipped_asymmetric": 0
+    }
+  ]
+}

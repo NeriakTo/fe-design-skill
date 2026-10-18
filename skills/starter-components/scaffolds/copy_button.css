@@ -1,0 +1,69 @@
+/* ============================================================
+ * copy_button.css — fe-design v1.4-short §24.6 P6.5
+ *
+ * 互動 prompt copy button — 基礎樣式
+ *
+ * 設計：圓角 6px、字重 700、150ms transition；引 design-tokens
+ *      `--color-accent`（主色）、`--color-success`（complete 狀態），
+ *      無 token 時 fallback 到 #6b46c1 / #38a169。
+ *
+ * 用途：page mode 注入此 CSS 即取得標準 copy button 視覺。
+ * 相關規格：fe-design.md §[4/7] page mode、IV20
+ * ============================================================ */
+
+.copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  background: var(--color-accent, #6b46c1);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+  user-select: none;
+}
+
+.copy-btn:hover {
+  filter: brightness(1.1);
+}
+
+.copy-btn:active {
+  transform: scale(0.97);
+}
+
+.copy-btn:focus-visible {
+  outline: 2px solid var(--color-accent, #6b46c1);
+  outline-offset: 2px;
+}
+
+.copy-btn.copied {
+  background: var(--color-success, #38a169);
+}
+
+.copy-btn.copy-error {
+  background: var(--color-danger, #e53e3e);
+}
+
+.copy-btn-label {
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .copy-btn {
+    transition: none;
+  }
+  .copy-btn:active {
+    transform: none;
+  }
+}
+
+@media print {
+  .copy-btn {
+    display: none !important;
+  }
+}

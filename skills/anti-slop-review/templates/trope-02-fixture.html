@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<!--
+  trope-02 regex test fixture (Phase 5 P5.1)
+
+  Tests:
+  1. Negative: cross-rule var(--gradient) + multi-line CSS → MUST NOT trigger trope-02
+  2. Negative: legitimate 2-stop linear-gradient → MUST NOT trigger
+  3. Positive: real 5-stop linear-gradient → MUST trigger
+
+  Run:
+    python ~/.claude/skills/anti-slop-review/scan.py --file ~/.claude/skills/anti-slop-review/templates/trope-02-fixture.html
+
+  Expected: trope-02 triggers exactly once (Section C only).
+-->
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>trope-02 fixture</title>
+  <style>
+    /* ───────────────────────────────────────────────────────────────────
+       Section A — Negative case 1: cross-rule var(--gradient) leak
+       Pre-fix regex `[^)]*` would leak past `)` and across `\n` to the
+       next rule's `var(...)`, falsely matching 4 commas across 2 rules.
+       Post-fix regex `[^()\n]*` blocks both → MUST NOT trigger.
+       ─────────────────────────────────────────────────────────────────── */
+    .hero {
+      --gradient: linear-gradient(180deg, #fff, #000);
+      background: var(--gradient),
+                  var(--gradient),
+                  var(--gradient),
+                  var(--gradient);
+    }
+
+    .card {
+      background: linear-gradient(180deg, #abc, #def);
+      border: 1px solid var(--accent);
+      color: var(--text);
+      padding: 12px;
+    }
+
+    /* ───────────────────────────────────────────────────────────────────
+       Section B — Negative case 2: legitimate 2-stop subtle gradient
+       linear-gradient with only 2 colors → fewer than 4 commas → MUST NOT trigger.
+       ─────────────────────────────────────────────────────────────────── */
+    .subtle-bg {
+      background: linear-gradient(135deg, rgba(0,0,0,0.05), rgba(0,0,0,0.15));
+    }
+
+    /* Inline 3-stop is borderline but pre-fix could mismatch; post-fix safe */
+    .three-stop {
+      background: linear-gradient(180deg, #f8fafc, #e2e8f0, #cbd5e1);
+    }
+
+    /* ───────────────────────────────────────────────────────────────────
+       Section C — Positive case: real 5-stop hero gradient (slop)
+       linear-gradient with 5+ colors on single line → MUST trigger trope-02.
+       ─────────────────────────────────────────────────────────────────── */
+    .slop-hero {
+      background: linear-gradient(180deg, #ff00ff, #ff8800, #00ffff, #88ff00, #ff0088);
+    }
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <div class="card">card with var refs</div>
+  </section>
+  <section class="subtle-bg">subtle</section>
+  <section class="three-stop">three stops</section>
+  <section class="slop-hero">SLOP — should trigger trope-02</section>
+</body>
+</html>

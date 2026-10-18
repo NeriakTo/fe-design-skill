@@ -1,0 +1,431 @@
+/* ============================================================
+ * charts.css — fe-design v1.4-short §24.10 P6.9
+ *
+ * Base styles for pie_chart / bar_chart / kpi_card scaffolds.
+ * Self-contained but token-friendly: pulls from mckinsey-consulting.css
+ * `--chart-1..6` / `--color-*` / `--font-body` / `--fs-*` / `--kpi-card-*`,
+ * with sensible fallbacks for standalone use.
+ *
+ * Adapted to deck mode (1920×1080) by default. For page mode embedding,
+ * scale down via container size + override `--fs-*` tokens.
+ *
+ * Print: charts retain colors; backgrounds force light to save toner.
+ * ============================================================ */
+
+/* ============== Pie chart ============== */
+.chart-pie {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3, 24px);
+  font-family: var(--font-body, system-ui, -apple-system, sans-serif);
+}
+
+.chart-pie--empty {
+  color: var(--color-text-muted, #4a5568);
+  font-style: italic;
+  font-size: var(--fs-caption, 12px);
+}
+
+.chart-pie__svg {
+  flex: 0 0 auto;
+  display: block;
+  /* Prevent SVG from being hidden by browser optimizations during print */
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.chart-pie__label {
+  fill: var(--color-bg, #ffffff);
+  font-size: 12px;
+  font-weight: 700;
+  font-family: var(--font-body, system-ui, sans-serif);
+  pointer-events: none;
+}
+
+.chart-pie__legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 8px);
+  font-size: var(--fs-body, 16px);
+  color: var(--color-text, #1a1a1a);
+}
+
+.chart-pie__legend-item {
+  display: grid;
+  grid-template-columns: 14px 1fr auto;
+  align-items: baseline;
+  gap: var(--space-1, 8px);
+}
+
+.chart-pie__swatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.chart-pie__legend-label {
+  font-weight: 500;
+}
+
+.chart-pie__legend-value {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted, #4a5568);
+}
+
+.chart-pie__legend-value small {
+  color: var(--color-text-faint, #718096);
+}
+
+/* ============== Bar chart ============== */
+.chart-bar {
+  font-family: var(--font-body, system-ui, -apple-system, sans-serif);
+  color: var(--color-text, #1a1a1a);
+}
+
+.chart-bar--empty {
+  color: var(--color-text-muted, #4a5568);
+  font-style: italic;
+  font-size: var(--fs-caption, 12px);
+}
+
+.chart-bar__svg {
+  display: block;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.chart-bar__axis {
+  stroke: var(--color-divider, #e5e7eb);
+  stroke-width: 1;
+}
+
+.chart-bar__category {
+  font-size: var(--fs-caption, 12px);
+  fill: var(--color-text-muted, #4a5568);
+  font-family: var(--font-body, system-ui, sans-serif);
+}
+
+.chart-bar__value {
+  font-size: var(--fs-caption, 12px);
+  fill: var(--color-text, #1a1a1a);
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+/* ============== KPI card ============== */
+.kpi-card {
+  background: var(--kpi-card-bg, #f5f7fa);
+  border: var(--kpi-card-border, 1px solid #e5e7eb);
+  border-radius: var(--kpi-card-radius, 8px);
+  padding: var(--space-3, 24px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1, 8px);
+  font-family: var(--font-body, system-ui, -apple-system, sans-serif);
+  color: var(--color-text, #1a1a1a);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.kpi-card--empty {
+  min-height: 120px;
+  background: transparent;
+  border-style: dashed;
+}
+
+.kpi-card__value {
+  font-size: var(--kpi-card-fs, 56px);
+  font-weight: var(--kpi-card-fw, 800);
+  line-height: var(--lh-tight, 1.15);
+  color: var(--color-primary, #003366);
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.kpi-card__prefix,
+.kpi-card__suffix {
+  font-size: 0.5em;
+  font-weight: 600;
+  color: var(--color-text-muted, #4a5568);
+}
+
+.kpi-card__label {
+  font-size: var(--fs-caption, 14px);
+  font-weight: 500;
+  color: var(--color-text-muted, #4a5568);
+}
+
+.kpi-card__change {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-1, 8px);
+  font-size: var(--fs-caption, 14px);
+  font-weight: 600;
+}
+
+.kpi-card__change-glyph {
+  font-size: 1em;
+  line-height: 1;
+}
+
+.kpi-card__change-value {
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-card__change--up {
+  color: var(--color-success, #15803d);
+}
+
+.kpi-card__change--down {
+  color: var(--color-danger, #b91c1c);
+}
+
+.kpi-card__change--neutral {
+  color: var(--color-text-muted, #4a5568);
+}
+
+.kpi-card__comparator {
+  color: var(--color-text-faint, #718096);
+  font-weight: 400;
+}
+
+/* ============== Gantt chart ============== */
+.chart-gantt {
+  font-family: var(--font-body, system-ui, -apple-system, sans-serif);
+  color: var(--color-text, #1a1a1a);
+}
+
+.chart-gantt--empty {
+  color: var(--color-text-muted, #4a5568);
+  font-style: italic;
+  font-size: var(--fs-caption, 12px);
+}
+
+.chart-gantt__svg {
+  display: block;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.chart-gantt__grid {
+  stroke: var(--color-divider, #e5e7eb);
+  stroke-width: 0.5;
+}
+
+.chart-gantt__label {
+  font-size: var(--fs-caption, 12px);
+  fill: var(--color-text, #1a1a1a);
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-weight: 500;
+}
+
+.chart-gantt__tick {
+  font-size: 10px;
+  fill: var(--color-text-muted, #4a5568);
+  font-family: var(--font-body, system-ui, sans-serif);
+}
+
+.chart-gantt__today {
+  stroke: var(--gantt-today, var(--color-danger, #b91c1c));
+  stroke-width: 1.5;
+  stroke-dasharray: 6 3;
+}
+
+.chart-gantt__today-label {
+  font-size: 10px;
+  fill: var(--gantt-today, var(--color-danger, #b91c1c));
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-weight: 600;
+}
+
+/* ============== Waterfall chart ============== */
+.chart-waterfall {
+  font-family: var(--font-body, system-ui, -apple-system, sans-serif);
+  color: var(--color-text, #1a1a1a);
+}
+
+.chart-waterfall--empty {
+  color: var(--color-text-muted, #4a5568);
+  font-style: italic;
+  font-size: var(--fs-caption, 12px);
+}
+
+.chart-waterfall__svg {
+  display: block;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.chart-waterfall__baseline {
+  stroke: var(--color-divider, #e5e7eb);
+  stroke-width: 1;
+}
+
+.chart-waterfall__connector {
+  stroke: var(--color-text-faint, #718096);
+  stroke-width: 1;
+  stroke-dasharray: 4 2;
+}
+
+.chart-waterfall__category {
+  font-size: var(--fs-caption, 12px);
+  fill: var(--color-text-muted, #4a5568);
+  font-family: var(--font-body, system-ui, sans-serif);
+}
+
+.chart-waterfall__value {
+  font-size: var(--fs-caption, 12px);
+  fill: var(--color-text, #1a1a1a);
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+/* ============== Matrix chart ============== */
+.chart-matrix {
+  font-family: var(--font-body, system-ui, -apple-system, sans-serif);
+  color: var(--color-text, #1a1a1a);
+}
+
+.chart-matrix--empty {
+  color: var(--color-text-muted, #4a5568);
+  font-style: italic;
+  font-size: var(--fs-caption, 12px);
+}
+
+.chart-matrix__svg {
+  display: block;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.chart-matrix__col-label {
+  font-size: var(--fs-caption, 12px);
+  fill: var(--color-text, #1a1a1a);
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-weight: 600;
+}
+
+.chart-matrix__row-label {
+  font-size: var(--fs-caption, 12px);
+  fill: var(--color-text, #1a1a1a);
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-weight: 600;
+}
+
+.chart-matrix__cell-label {
+  font-size: var(--fs-caption, 12px);
+  fill: var(--color-text, #1a1a1a);
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-weight: 600;
+}
+
+.chart-matrix__cell-value {
+  font-size: 11px;
+  fill: var(--color-text-muted, #4a5568);
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-variant-numeric: tabular-nums;
+}
+
+.chart-matrix__cell--empty rect {
+  stroke-dasharray: 4, 4;
+}
+
+/* ============== Process flow ============== */
+.chart-process {
+  font-family: var(--font-body, system-ui, -apple-system, sans-serif);
+  color: var(--color-text, #1a1a1a);
+}
+
+.chart-process--empty {
+  color: var(--color-text-muted, #4a5568);
+  font-style: italic;
+  font-size: var(--fs-caption, 12px);
+}
+
+.chart-process__svg {
+  display: block;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+.chart-process__arrow {
+  stroke: var(--color-text-muted, #4a5568);
+  stroke-width: 1.5;
+}
+
+.chart-process__label {
+  font-size: var(--fs-caption, 12px);
+  fill: var(--color-text, #1a1a1a);
+  font-family: var(--font-body, system-ui, sans-serif);
+  font-weight: 600;
+}
+
+.chart-process__desc {
+  font-size: 11px;
+  fill: var(--color-text-muted, #4a5568);
+  font-family: var(--font-body, system-ui, sans-serif);
+}
+
+/* 脈動動畫（active 節點） */
+@keyframes process-pulse {
+  0% { r: 14; opacity: 0.5; }
+  50% { r: 20; opacity: 0; }
+  100% { r: 14; opacity: 0; }
+}
+
+.chart-process__pulse {
+  animation: process-pulse 1.8s ease-out infinite;
+}
+
+/* 尊重使用者減少動畫偏好 */
+@media (prefers-reduced-motion: reduce) {
+  .chart-process__pulse {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+/* ============== Fallback token 別名 ============== */
+/* 各新 chart 的語意化 token，解析至 --chart-N 或 --color-* */
+:root {
+  --gantt-today: var(--color-danger, #b91c1c);
+  --waterfall-increase: var(--chart-3, #15803d);
+  --waterfall-decrease: var(--chart-6, #b91c1c);
+  --waterfall-total: var(--chart-1, #003366);
+  --process-done: var(--chart-3, #15803d);
+  --process-active: var(--chart-1, #003366);
+  --process-pending: var(--color-text-muted, #4a5568);
+}
+
+/* ============== Print ============== */
+@media print {
+  .chart-pie__svg,
+  .chart-bar__svg,
+  .chart-gantt__svg,
+  .chart-waterfall__svg,
+  .chart-matrix__svg,
+  .chart-process__svg,
+  .kpi-card {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+    /* Avoid splitting a chart across pages */
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* 列印時停用脈動動畫 */
+  .chart-process__pulse {
+    animation: none;
+    opacity: 0;
+  }
+}

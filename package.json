@@ -1,0 +1,22 @@
+{
+  "name": "fe-design-skill",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "playwright": "^1.64.1"
+  },
+  "description": "A front-end design pipeline for Claude Code, tuned for Traditional Chinese decks and pages.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NeriakTo/fe-design-skill.git"
+  },
+  "author": "Kevin Du",
+  "optionalDependencies": {
+    "pixelmatch": "^8.0.0",
+    "pngjs": "^7.0.0",
+    "pptxgenjs": "^4.0.1"
+  }
+}

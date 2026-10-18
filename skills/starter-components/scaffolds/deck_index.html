@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<!--
+  deck_index.html — 多文件 slide 拼接器
+  Copyright 2026 Kevin Du
+  Licensed under the Apache License, Version 2.0 — see ../LICENSE-APACHE-2.0
+  Part of starter-components skill (fe-design v1.5 P7.7)
+
+  用途：≥10 頁的大型 deck，每頁獨立 HTML，免 CSS 串擾
+  使用方式：
+    1. 建立 slides/ 目錄，每頁一個 HTML 檔（slide-01.html, slide-02.html, ...）
+    2. 在 SLIDES 陣列中依序列出檔名
+    3. 用瀏覽器開啟本檔即可預覽完整 deck
+
+  鍵盤快捷鍵：
+    ← / PageUp        上一張
+    → / Space / PageDown  下一張
+    Home / End        第一/最後一張
+    P                 列印模式 toggle
+    數字 + Enter      跳到指定 slide
+-->
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>Deck — Multi-file</title>
+<style>
+  :root {
+    --deck-bg: #0b1326;
+    --deck-canvas-bg: #ffffff;
+    --deck-counter-bg: rgba(0,0,0,0.5);
+    --deck-counter-fg: #ffffff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: var(--deck-bg); }
+
+  .deck-container {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+
+  .slide-frame {
+    width: 1920px; height: 1080px;
+    transform-origin: top left;
+    border: none;
+    background: var(--deck-canvas-bg);
+    display: none;
+  }
+  .slide-frame.active { display: block; }
+
+  .counter {
+    position: fixed; bottom: 16px; right: 16px;
+    background: var(--deck-counter-bg);
+    color: var(--deck-counter-fg);
+    font: 14px/1 system-ui;
+    padding: 6px 12px;
+    border-radius: 4px;
+    z-index: 9999;
+    user-select: none;
+  }
+
+  body.print-mode {
+    overflow: auto;
+    height: auto;
+  }
+  body.print-mode .deck-container {
+    display: block;
+    width: 1920px;
+    height: auto;
+  }
+  body.print-mode .slide-frame {
+    display: block !important;
+    transform: none !important;
+    margin-bottom: 2px;
+  }
+  body.print-mode .counter { display: none; }
+
+  @media print {
+    body { overflow: visible; height: auto; }
+    .deck-container { display: block; width: 1920px; height: auto; }
+    .slide-frame {
+      display: block !important;
+      transform: none !important;
+      page-break-after: always;
+      margin: 0;
+    }
+    .counter { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="deck-container" id="deck"></div>
+<div class="counter" id="counter"></div>
+
+<script>
+const SLIDES = [
+  'slides/slide-01.html',
+  'slides/slide-02.html',
+  'slides/slide-03.html',
+];
+
+const CANVAS_W = 1920;
+const CANVAS_H = 1080;
+
+let current = 0;
+let printMode = false;
+let numBuffer = '';
+
+const deck = document.getElementById('deck');
+const counter = document.getElementById('counter');
+
+function init() {
+  SLIDES.forEach((src, i) => {
+    const iframe = document.createElement('iframe');
+    iframe.className = 'slide-frame';
+    iframe.dataset.index = i;
+    iframe.src = src;
+    iframe.width = CANVAS_W;
+    iframe.height = CANVAS_H;
+    iframe.setAttribute('loading', 'lazy');
+    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+    deck.appendChild(iframe);
+  });
+
+  try {
+    const saved = localStorage.getItem('deck-index:current');
+    if (saved !== null) {
+      const n = parseInt(saved, 10);
+      if (n >= 0 && n < SLIDES.length) current = n;
+    }
+  } catch {}
+
+
+  goto(current);
+  fitScale();
+  window.addEventListener('resize', fitScale);
+  document.addEventListener('keydown', onKey);
+}
+
+function goto(n) {
+  if (n < 0 || n >= SLIDES.length) return;
+  current = n;
+  try { localStorage.setItem('deck-index:current', current); } catch {}
+
+  if (!printMode) {
+    document.querySelectorAll('.slide-frame').forEach((f, i) => {
+      f.classList.toggle('active', i === current);
+    });
+    fitScale();
+  }
+  counter.textContent = `${current + 1} / ${SLIDES.length}`;
+}
+
+function next() { goto(current + 1); }
+function prev() { goto(current - 1); }
+
+function fitScale() {
+  if (printMode) return;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+  const scale = Math.min(vw / CANVAS_W, vh / CANVAS_H);
+  const active = document.querySelector('.slide-frame.active');
+  if (active) {
+    active.style.transform = `scale(${scale})`;
+    const offsetX = (vw - CANVAS_W * scale) / 2;
+    const offsetY = (vh - CANVAS_H * scale) / 2;
+    active.style.position = 'absolute';
+    active.style.left = `${offsetX}px`;
+    active.style.top = `${offsetY}px`;
+  }
+}
+
+function togglePrint() {
+  printMode = !printMode;
+  document.body.classList.toggle('print-mode', printMode);
+  if (printMode) {
+    document.querySelectorAll('.slide-frame').forEach(f => {
+      f.style.transform = '';
+      f.style.position = '';
+      f.style.left = '';
+      f.style.top = '';
+    });
+  } else {
+    goto(current);
+    fitScale();
+  }
+}
+
+function onKey(e) {
+  if (e.key >= '0' && e.key <= '9') {
+    numBuffer += e.key;
+    return;
+  }
+  if (e.key === 'Enter' && numBuffer) {
+    const n = parseInt(numBuffer, 10) - 1;
+    numBuffer = '';
+    goto(n);
+    return;
+  }
+  numBuffer = '';
+
+  switch (e.key) {
+    case 'ArrowRight': case ' ': case 'PageDown': next(); break;
+    case 'ArrowLeft': case 'PageUp': prev(); break;
+    case 'Home': goto(0); break;
+    case 'End': goto(SLIDES.length - 1); break;
+    case 'p': case 'P': togglePrint(); break;
+  }
+}
+
+window.__deck = {
+  get slideCount() { return SLIDES.length; },
+  get current() { return current; },
+  next, prev, goto, togglePrint,
+};
+
+init();
+</script>
+</body>
+</html>

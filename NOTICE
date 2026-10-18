@@ -1,0 +1,36 @@
+fe-design
+Copyright 2026 Kevin Du
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+It includes or adapts material from the following third-party projects:
+
+1. design.md (google-labs-code/design.md)
+   https://github.com/google-labs-code/design.md
+   License: Apache License 2.0
+   - skills/anti-slop-review/vendored/google-design.md-0.1.1.tgz is the
+     unmodified npm package @google/design.md@0.1.1, used as an offline
+     fallback for the DESIGN.md linter.
+   - skills/starter-components/starters/chenxi-liuli/ is adapted from the
+     project's example design system (translated to Traditional Chinese,
+     brand voice rewritten). See that folder's README for details.
+
+2. taste-skill (Leonxlnx/taste-skill)
+   https://github.com/Leonxlnx/taste-skill
+   License: MIT
+   - skills/starter-components/craft/taste-layout.md adapts layout rules
+     from the project.
+   - The study figures quoted in skills/anti-slop-review/trope-catalog.md
+     and README.md come from the project's references/research.md.
+
+3. awesome-design-md (VoltAgent/awesome-design-md)
+   https://github.com/VoltAgent/awesome-design-md
+   License: MIT
+   - Used as a reference for the categories in the trope catalogue.
+     No text is copied.
+
+4. Inter typeface (rsms/inter)
+   https://github.com/rsms/inter
+   License: SIL Open Font License 1.1
+   - Referenced by some starters; the licence text is included as
+     skills/starter-components/Inter-LICENSE-OFL.

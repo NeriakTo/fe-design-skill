@@ -1,0 +1,46 @@
+/* ============================================================
+ * mixed-bilingual.css — fe-design v1.4 §24.2 方案 A
+ *
+ * ⚠️⚠️⚠️ 警告：僅當主受眾為英文用戶時才使用此樣板 ⚠️⚠️⚠️
+ *
+ * 此方案為西方 consulting deck 標準（McKinsey / BCG / Bain 英文版）：
+ * - 標題用 serif（Source Serif 4，襯線體配明體 — 西方體系合規）
+ * - 內文用 sans（Inter，無襯線配黑體 — 西方體系合規）
+ *
+ * 但在繁體中文界這違反基本法則（明體標題 + 黑體內文混搭）：
+ * - justfont 等權威：「襯線體配明體、無襯線體配黑體」
+ * - 同頁出現「Source Serif 4 + Noto Serif TC」+「Inter + Noto Sans TC」
+ *   會被 anti-slop trope-17 警告（CJK Mincho+Gothic Mismatch）
+ *
+ * 何時用：
+ * ✅ 受眾 95%+ 英文用戶（國際化產品 / 國外客戶簡報）
+ * ❌ 任何中文受眾為主或中英混雜的場景 → 改用 consulting-mono-sans.css（方案 B 預設）
+ *
+ * trope-17 ignore：使用此樣板的檔案請在 anti-slop scan 加 `--ignore-trope trope-17`
+ * ============================================================ */
+
+:root {
+  /* Typography — 字族（混搭 serif headline + sans body，西方體系）*/
+  --font-display: 'Source Serif 4', 'Noto Serif TC', Georgia, serif;
+  --font-body: 'Inter', 'Noto Sans TC', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Source Code Pro', monospace;
+
+  /* Typography — 字級五級 */
+  --fs-hero: 56px;
+  --fs-h1: 40px;
+  --fs-h2: 28px;
+  --fs-body: 16px;
+  --fs-caption: 12px;
+
+  /* Typography — 字重五級 */
+  --fw-hero: 700;
+  --fw-h1: 700;
+  --fw-h2: 600;
+  --fw-body: 400;
+  --fw-caption: 500;
+
+  /* Typography — 行高 */
+  --lh-tight: 1.2;
+  --lh-normal: 1.55;
+  --lh-relaxed: 1.8;
+}

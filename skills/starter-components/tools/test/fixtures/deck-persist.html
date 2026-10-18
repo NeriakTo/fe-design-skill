@@ -1,0 +1,21 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><title>persist fixture</title>
+<style>.slide{width:1920px;height:1080px;font-size:80px;padding:80px;box-sizing:border-box}</style>
+</head><body>
+<deck-stage>
+<section class="slide">第一頁</section>
+<section class="slide">第二頁</section>
+<section class="slide">第三頁</section>
+<section class="slide">第四頁</section>
+<section class="slide">第五頁</section>
+<section class="slide">第六頁</section>
+</deck-stage>
+<script>
+/* 測試用：把查詢字串的參數當屬性套到 deck-stage 上，且必須在元件升級之前套完，
+   這樣重載才留得住（用 JS 事後 setAttribute 會在 reload 時消失）。 */
+(function () {
+  var el = document.querySelector('deck-stage');
+  new URLSearchParams(location.search).forEach(function (v, k) { el.setAttribute(k, v); });
+})();
+</script>
+<script type="module" src="../../../scaffolds/deck_stage.js"></script>
+</body></html>

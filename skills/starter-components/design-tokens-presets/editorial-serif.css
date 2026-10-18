@@ -1,0 +1,40 @@
+/* ============================================================
+ * editorial-serif.css — fe-design v1.4 §24.2 方案 C
+ *
+ * 全明體 + 字重對比（年報 / 學術派 / editorial）
+ *
+ * 字體配對基本法則：
+ * ✅ 同字族不同字重做標題/內文對比
+ * ✅ 明體配 serif（中文界基本法則）
+ * ❌ 禁止「明體標題 + 黑體內文」混搭
+ *
+ * 適用：年報 / 學術報告 / editorial / 文人風 deck
+ * 注意：思源宋體繁中含 9000+ 字符，inline 會增加 ~14 MB；
+ *       standalone 部署考量檔案大小可改用 subset 或方案 B
+ * ============================================================ */
+
+:root {
+  /* Typography — 字族 */
+  --font-display: 'Source Serif 4', 'Noto Serif TC', Georgia, serif;
+  --font-body: 'Source Serif 4', 'Noto Serif TC', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'Source Code Pro', monospace;
+
+  /* Typography — 字級五級 */
+  --fs-hero: 56px;
+  --fs-h1: 40px;
+  --fs-h2: 28px;
+  --fs-body: 16px;
+  --fs-caption: 12px;
+
+  /* Typography — 字重五級（明體字重變化幅度通常較小） */
+  --fw-hero: 700;
+  --fw-h1: 700;
+  --fw-h2: 600;
+  --fw-body: 400;
+  --fw-caption: 400;
+
+  /* Typography — 行高（明體建議行高更寬鬆） */
+  --lh-tight: 1.2;
+  --lh-normal: 1.6;
+  --lh-relaxed: 1.85;
+}

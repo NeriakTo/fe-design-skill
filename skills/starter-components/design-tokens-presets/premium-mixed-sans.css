@@ -1,0 +1,44 @@
+/* ============================================================
+ * premium-mixed-sans.css — fe-design v1.4 §24.2 方案 D
+ *
+ * 全黑體 + 不同字族（進階質感）
+ *
+ * 字體配對基本法則：
+ * ✅ 兩套黑體字族（思源黑體 vs 文鼎黑/源樣黑）做質感對比
+ * ✅ 標題與內文同為無襯線體（中文界基本法則合規）
+ * ❌ 禁止「明體標題 + 黑體內文」混搭
+ *
+ * 適用：高質感 brand deck / premium product / 想突破方案 B 同字族視覺單一
+ * 注意：兩套黑體 inline 會增加 ~10-15 MB，standalone 部署需評估
+ *
+ * 字族選擇邏輯：
+ * - 標題用 思源黑體（Bold）— 結構嚴謹、現代屏顯感
+ * - 內文用 文鼎黑/源樣黑 — 字面更溫潤、長段閱讀更舒適
+ * - 若無這兩套字體授權，可改用 Inter Bold + IBM Plex Sans 替代
+ * ============================================================ */
+
+:root {
+  /* Typography — 字族（兩套黑體質感對比）*/
+  --font-display: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+  --font-body: 'GenJyuuGothic', 'Source Han Sans TW', 'Noto Sans TC', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Source Code Pro', monospace;
+
+  /* Typography — 字級五級 */
+  --fs-hero: 56px;
+  --fs-h1: 40px;
+  --fs-h2: 28px;
+  --fs-body: 16px;
+  --fs-caption: 12px;
+
+  /* Typography — 字重五級 */
+  --fw-hero: 900;
+  --fw-h1: 700;
+  --fw-h2: 600;
+  --fw-body: 400;
+  --fw-caption: 500;
+
+  /* Typography — 行高 */
+  --lh-tight: 1.15;
+  --lh-normal: 1.55;
+  --lh-relaxed: 1.8;
+}

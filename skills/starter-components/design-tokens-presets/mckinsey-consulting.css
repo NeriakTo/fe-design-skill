@@ -1,0 +1,112 @@
+/* ============================================================
+ * mckinsey-consulting.css — fe-design v1.4-short §24.9 P6.8
+ *
+ * Consulting-style design tokens preset（fullday deck）
+ *
+ * 用途：McKinsey / BCG / Bain 風格的長時數簡報（fullday、半天、課程）
+ *      一鍵套用色票/字級/間距/component tokens，無需每案重寫。
+ *
+ * 字體配對：本 preset 為 self-contained — 已自帶 `--font-display / --font-body / --font-mono`
+ *           與 `--fs-* / --fw-* / --lh-*` 整套，單獨載入即可工作。
+ *           若 case 已先引 `consulting-mono-sans.css`，本 preset 的字體 tokens 會被
+ *           沿用（同名同值，無衝突）。
+ *
+ * Token 命名遵循 §24.2.2 統一規範：
+ * - 字級：fs-hero / fs-h1 / fs-h2 / fs-body / fs-caption（五級）
+ * - 字重：fw-hero / fw-h1 / fw-h2 / fw-body / fw-caption（五級，無 fw-display / fw-body 舊命名）
+ * - 行高：lh-tight / lh-normal / lh-relaxed
+ * - 字族：font-display / font-body / font-mono
+ * - 顏色：color-primary / color-accent / color-text / color-bg 等
+ * - 間距：space-1..6（8px grid）
+ * - 圖表：chart-1..6（6 series consulting-grade palette）
+ * - 元件：action-title-* / kpi-card-* （P6.9 / P6.10 引用）
+ *
+ * 適用：deck mode + consulting-style；半天/全天課程簡報
+ * 反面案例：page mode 用此 preset 字級會過大（請改用 page-friendly preset）
+ *
+ * 相關規格：fe-design.md §[3/7] / §[4/7] deck mode、IV23
+ * ============================================================ */
+
+:root {
+  /* ============== Color palette — McKinsey navy/orange ============== */
+  --color-primary: #003366;       /* deep navy — title / headline */
+  --color-primary-dark: #002244;  /* deepest navy — KPI 大字 / cover */
+  --color-accent: #d97706;        /* burnt orange — divider / fill / large text (≥ 18px) */
+  --color-accent-light: #fed7aa;  /* highlight bg / takeaway box */
+  --color-accent-dark: #92400e;   /* accent text emphasis on light bg */
+  /* a11y rule — accent on light bg：
+     - --color-accent (#d97706) 對 #fff 對比 3.19:1，僅符合 WCAG AA Large（≥ 18px / 14px bold）
+     - --color-accent-text (#92400e on #fff = 8.79:1) 給 small text（≤ 14px）使用 */
+  --color-accent-text: #92400e;
+
+  --color-text: #1a1a1a;          /* body text */
+  --color-text-muted: #4a5568;    /* secondary body / footer */
+  --color-text-faint: #718096;    /* caption / source */
+
+  --color-bg: #ffffff;            /* main bg */
+  --color-bg-alt: #f5f7fa;        /* card / section alt */
+  --color-bg-cool: #f7fafc;       /* zebra / fill alt */
+  --color-divider: #e5e7eb;       /* divider line / table border */
+
+  --color-success: #15803d;
+  --color-warning: #b45309;
+  --color-danger: #b91c1c;
+
+  /* ============== Chart palette — 6 series consulting-grade ============== */
+  --chart-1: #003366;             /* deep navy — primary series */
+  --chart-2: #d97706;             /* accent orange — emphasis series */
+  --chart-3: #4a6285;             /* slate — comparator */
+  --chart-4: #92400e;             /* deep accent */
+  --chart-5: #2c4a73;             /* mid navy */
+  --chart-6: #cbd5e0;             /* gray neutral — total/baseline */
+
+  /* ============== Spacing — 8px grid ============== */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 48px;
+  --space-6: 64px;
+
+  /* ============== Typography — 五級 §24.2.2 命名 ============== */
+  /* 字族：搭配 consulting-mono-sans.css 方案 B（全黑體 + 字重對比） */
+  --font-display: 'Inter', 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+  --font-body:    'Inter', 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+  --font-mono:    'JetBrains Mono', 'SF Mono', Menlo, monospace;
+
+  /* 字級五級（1920×1080 viewport，consulting deck）*/
+  --fs-hero:    56px;             /* cover / hero */
+  --fs-h1:      40px;             /* slide action title */
+  --fs-h2:      28px;             /* slide sub title */
+  --fs-body:    16px;             /* main body */
+  --fs-caption: 12px;             /* footer / source / caption */
+
+  /* 字重五級（同字族字重對比）*/
+  --fw-hero:    900;
+  --fw-h1:      800;
+  --fw-h2:      700;
+  --fw-body:    400;
+  --fw-caption: 500;
+
+  /* 行高三級 */
+  --lh-tight:   1.15;
+  --lh-normal:  1.5;
+  --lh-relaxed: 1.75;
+
+  /* ============== Component tokens ============== */
+  /* P6.10 action title (pyramid principle) */
+  --action-title-fs: 20px;
+  --action-title-fw: 700;
+
+  /* P6.9 KPI card */
+  --kpi-card-bg:     var(--color-bg-alt);
+  --kpi-card-border: 1px solid var(--color-divider);
+  --kpi-card-radius: 8px;
+  --kpi-card-fs:     56px;
+  --kpi-card-fw:     800;
+
+  /* Pyramid tier (consulting deck 結構圖) */
+  --pyramid-tier-bg-strong: var(--color-primary);
+  --pyramid-tier-bg-mid:    var(--color-primary-dark);
+  --pyramid-tier-bg-soft:   var(--color-bg-alt);
+}

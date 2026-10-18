@@ -1,0 +1,392 @@
+{
+  "version": "1.1",
+  "description": "19 條繁中 anti-slop trope，含 26 個 regex 樣式與 4 個未實作結構型樣式；減少動態為候選檢查，配合 scan.py 使用",
+  "metadata": {
+    "created": "2026-04-25",
+    "author": "Kevin Du",
+    "skill": "anti-slop-review",
+    "fe_design_version": "v1.2.2"
+  },
+  "tropes": [
+    {
+      "id": "trope-01",
+      "name": "彩色邊條卡片",
+      "name_en": "Colored Side Border Card",
+      "severity": "warning",
+      "patterns": [
+        {
+          "type": "regex",
+          "pattern": "border-l-(2|4|8)\\s+[^\"']*\\bborder-l-(blue|green|red|yellow|purple|pink|indigo|orange|teal|cyan)-\\d+",
+          "flags": "i",
+          "description": "Tailwind 同時用 border-l-N 寬度 + 彩色 border-l class"
+        },
+        {
+          "type": "regex",
+          "pattern": "border-left:\\s*[1-9]\\d*px\\s+(solid|dashed)\\s+#?[a-fA-F0-9]{3,8}",
+          "flags": "i",
+          "description": "CSS inline border-left 指定彩色"
+        }
+      ],
+      "min_count": 3,
+      "remediation": "用背景色區塊（bg-blue-50）或留白排版取代彩邊；留白比顏色更有級別感"
+    },
+    {
+      "id": "trope-02",
+      "name": "過度漸層（多色）",
+      "name_en": "Multi-stop Hero Gradient",
+      "severity": "warning",
+      "patterns": [
+        {
+          "type": "regex",
+          "pattern": "from-\\w+-\\d+\\s+via-\\w+-\\d+\\s+to-\\w+-\\d+",
+          "flags": "",
+          "description": "Tailwind 三色以上 gradient（from-via-to）"
+        },
+        {
+          "type": "regex",
+          "pattern": "linear-gradient\\([^,()\\n]*,[^,()\\n]*,[^,()\\n]*,[^,()\\n]*,",
+          "flags": "i",
+          "description": "CSS linear-gradient 4+ stops（v1.3 P5.1：所有片段排除 ,()\\n 防止跨行/跨 rgba()/var() leak）"
+        }
+      ],
+      "min_count": 1,
+      "remediation": "單色漸層或雙色 subtle 漸層（< 8% 對比差），避免紫粉橙三色組合"
+    },
+    {
+      "id": "trope-03",
+      "name": "三欄置中 benefit card",
+      "name_en": "Three-Column Centered Benefit",
+      "severity": "warning",
+      "patterns": [
+        {
+          "type": "regex",
+          "pattern": "grid-cols-3[^\"']*\\btext-center",
+          "flags": "i",
+          "description": "Tailwind grid-cols-3 + text-center 組合"
+        },
+        {
+          "type": "structural",
+          "rule": "grid_cols_3_with_centered_icons",
+          "description": "三欄 grid 內部含 ≥ 3 個 icon 元素 + 標題置中"
+        }
+      ],
+      "min_count": 1,
+      "remediation": "改用時間軸 / 對照表 / 大圖配 3 條子標 / 縱向 stepper"
+    },
+    {
+      "id": "trope-04",
+      "name": "預設 Inter 字型（無對比）",
+      "name_en": "Default Inter Everything",
+      "severity": "info",
+      "patterns": [
+        {
+          "type": "regex",
+          "pattern": "font-family:\\s*['\"]?Inter['\"]?",
+          "flags": "i",
+          "description": "CSS font-family Inter"
+        }
+      ],
+      "min_count": 1,
+      "exclusion_pattern": "((?<!sans-)\\bserif\\b|Playfair|Source\\s*Serif|Georgia|Merriweather|Lora|EB\\s*Garamond)",
+      "exclusion_description": "若同檔有真 serif 字型則豁免（顯示有對比意圖）；R1 HIGH-02 修正：lookbehind 排除 sans-serif 誤觸",
+      "remediation": "標題換 serif（Playfair / Source Serif）或字重強對比（300 / 700 混用）"
+    },
+    {
+      "id": "trope-05",
+      "name": "所有元素置中",
+      "name_en": "Everything Centered",
+      "severity": "warning",
+      "patterns": [
+        {
+          "type": "regex",
+          "pattern": "(text-center|items-center|justify-center|mx-auto)",
+          "flags": "g",
+          "description": "Tailwind 置中 utility classes"
+        }
+      ],
+      "min_count": 8,
+      "scope": "single_block",
+      "remediation": "左對齊主文 + 右側錯位元素 / 左圖右文 / Z 字形動線"
+    },
+    {
+      "id": "trope-06",
+      "name": "過度圓角",
+      "name_en": "Over-rounded Everything",
+      "severity": "warning",
+      "patterns": [
+        {
+          "type": "regex",
+          "pattern": "rounded-(2xl|3xl|full)\\b",
+          "flags": "g",
+          "description": "Tailwind 大圓角 utility"
+        }
+      ],
+      "min_count": 5,
+      "remediation": "0~4px sharp 與 12px+ round 混用（按鈕 round / 卡片 sharp / image 0px）"
+    },
+    {
+      "id": "trope-07",
+      "name": "Emoji 當 icon",
+      "name_en": "Emoji-as-Icon",
+      "severity": "warning",
+      "patterns": [
+        {
+          "type": "regex",
+          "pattern": "<(h[1-6]|button|li|a)[^>]*>\\s*([\ud83c-\ud83e][\udc00-\udfff]|[☀-➿])\\s",
+          "flags": "u",
+          "description": "Heading / button / list / link 開頭含 emoji（R1 HIGH-03 修正：改 Python re 可解析的 surrogate pair / BMP 範圍寫法）"
+        }
+      ],
+      "min_count": 2,
+      "remediation": "用 SVG icon set（lucide / heroicons / phosphor）保持 stroke 一致性"
+    },
+    {
+      "id": "trope-08",
+      "name": "Linear gradient border",
+      "name_en": "Gradient Card Border",
+      "severity": "warning",
+      "patterns": [
+        {
+          "type": "regex",
+          "pattern": "border-image\\s*:\\s*linear-gradient",
+          "flags": "i",
+          "description": "CSS border-image 漸層"
+        },
+        {
+          "type": "regex",
+          "pattern": "bg-gradient-to-\\w+\\s+[^\"']*p-\\[?\\d+px",
+          "flags": "i",
+          "description": "Tailwind 漸層底 + padding 構造邊框 trick"
+        }
+      ],
+      "min_count": 1,
+      "remediation": "用 box-shadow 構造邊框質感 / 純色細邊（1px）/ subtle inset shadow"
+    },
+    {
+      "id": "trope-09",
+      "name": "浮誇詞彙",
+      "name_en": "Hyperbolic Marketing Lingo",
+      "severity": "warning",
+      "patterns": [
+        {
+          "type": "regex",
+          "pattern": "\\b(revolutionary|seamless|cutting-edge|unleash|game[- ]changer|next[- ]generation|paradigm[- ]shift|disruptive|innovative|world[- ]class)\\b",
+          "flags": "i",
+          "description": "英文行銷腔詞彙"
+        },
+        {
+          "type": "regex",
+          "pattern": "(顛覆|無縫|劃時代|全新一代|改變遊戲規則|引領未來|破壞式創新|前所未有|世界級)",
+          "flags": "",
+          "description": "繁中行銷腔詞彙"
+        }
+      ],
+      "min_count": 2,
+      "remediation": "改用具體數字（省 40 分鐘/天）/ 動詞（自動產生報表）/ 結果（接通客戶後 3 秒回應）"
+    },
+    {
+      "id": "trope-10",
+      "name": "過量 hover 特效",
+      "name_en": "Hover-Effect Overload",
+      "severity": "info",
+      "patterns": [
+        {
+          "type": "regex",
+          "pattern": "hover:(scale-|shadow-|rotate-|translate-)",
+          "flags": "g",
+          "description": "Tailwind hover transform / shadow"
+        }
+      ],
+      "min_count": 8,
+      "remediation": "聚焦只有主 CTA + 主要連結加 hover；其他維持靜態"
+    },
+    {
+      "id": "trope-11",
+      "name": "假資料人名陳腔",
+      "name_en": "Stock Persona Names",
+      "severity": "info",
+      "patterns": [
+        {
+          "type": "regex",
+          "pattern": "\\b(John\\s+Doe|Jane\\s+Smith|Tom\\s+Cook|Lindsay\\s+Walton|Anonymous\\s+User)\\b",
+          "flags": "i",
+          "description": "英文 stock 人名"
+        },
+        {
+          "type": "regex",
+          "pattern": "(王小明|陳大華|李大同|張小華|林志明)",
+          "flags": "",
+          "description": "繁中 stock 人名"
+        },
+        {
+          "type": "regex",
+          "pattern": "/(default|placeholder|avatar)\\.(png|jpg|svg)",
+          "flags": "i",
+          "description": "預設 avatar 圖檔路徑"
+        }
+      ],
+      "min_count": 1,
+      "remediation": "真實客戶（拿過授權）/ 留白「您的客戶」+ 上傳 placeholder / 完全不放 avatar，只放公司 logo"
+    },
+    {
+      "id": "trope-12",
+      "name": "Dashboard 無意義圖表",
+      "name_en": "Decorative Dashboard Charts",
+      "severity": "info",
+      "patterns": [
+        {
+          "type": "regex",
+          "pattern": "(randomData|fakeData|mockData|generateChart|dummyData|sampleData)",
+          "flags": "",
+          "description": "假資料變數命名"
+        },
+        {
+          "type": "regex",
+          "pattern": "Math\\.random\\(\\)\\s*\\*\\s*\\d+.*chart",
+          "flags": "is",
+          "description": "Math.random() 餵 chart"
+        }
+      ],
+      "min_count": 1,
+      "remediation": "放真實資料 / 刻意極簡（單一數字大 + 1 行 context）/ 不放圖表，改 bullet 重點"
+    },
+    {
+      "id": "trope-13",
+      "name": "堆疊式 feature list",
+      "name_en": "Pile-up Feature List",
+      "severity": "info",
+      "patterns": [
+        {
+          "type": "structural",
+          "rule": "consecutive_li_with_check_short",
+          "min_count": 8,
+          "max_chars_per_li": 30,
+          "description": "連續 ≥ 8 個 <li>，每個 < 30 字元，且有 ✓/✔/check icon"
+        }
+      ],
+      "min_count": 1,
+      "remediation": "分組（核心 / 進階 / 整合）+ 對比表（vs 競爭者）+ 標粗 1-2 條主打 / 圖文排版"
+    },
+    {
+      "id": "trope-14",
+      "name": "Hero 巨型標題（無子標）",
+      "name_en": "Oversized Hero Headline",
+      "severity": "warning",
+      "patterns": [
+        {
+          "type": "regex",
+          "pattern": "<h1[^>]*\\b(text-(8xl|9xl)|font-size:\\s*(96|112|128|144)px)",
+          "flags": "i",
+          "description": "h1 96px+ 字級"
+        }
+      ],
+      "min_count": 1,
+      "context_check": {
+        "rule": "no_h2_or_p_within_100_chars_after",
+        "description": "h1 後 100 字元內無 h2 或 p 標籤"
+      },
+      "remediation": "標題（48-72px 適中）+ 承諾子標（具體價值 + 2-3 行）+ CTA 三層次"
+    },
+    {
+      "id": "trope-15",
+      "name": "全 font-weight: 400（無階層）",
+      "name_en": "Single-Weight Typography",
+      "severity": "info",
+      "patterns": [
+        {
+          "type": "structural",
+          "rule": "single_font_weight_value",
+          "description": "全文件 font-weight 都是同一值（通常 400）"
+        }
+      ],
+      "min_count": 1,
+      "remediation": "300 light（標題襯托）/ 500 medium（body）/ 700 bold（標題、按鈕、強調）混用"
+    },
+    {
+      "id": "trope-16",
+      "name": "過度嵌套 Container",
+      "name_en": "Excessive Container Nesting",
+      "severity": "warning",
+      "patterns": [
+        {
+          "type": "structural",
+          "rule": "html_nesting_depth_exceeds",
+          "max_depth": 5,
+          "description": "<div> 嵌套深度 > 5 層"
+        },
+        {
+          "type": "regex",
+          "pattern": "(?:flex\\s+items-center\\s+justify-center[^\\n]*\\n[\\s]*){3,}",
+          "flags": "g",
+          "description": "連續 3+ 行重複 flex items-center justify-center"
+        }
+      ],
+      "min_count": 1,
+      "remediation": "用 CSS Grid grid-template-areas / place-items: center 一次解；嵌套深度 ≤ 5；同父層下重複 className 去重"
+    },
+    {
+      "id": "trope-17",
+      "name": "CJK 明體+黑體混搭",
+      "name_en": "CJK Mincho+Gothic Mismatch",
+      "severity": "warning",
+      "patterns": [
+        {
+          "type": "regex",
+          "pattern": "font-family\\s*:[^;}]*\\b(Noto Serif TC|思源宋體|宋體|Mincho)\\b[^;}]*\\b(Noto Sans TC|思源黑體|Gothic)\\b",
+          "flags": "i",
+          "description": "順序：同一個 font-family declaration 內 CJK 明體 → CJK 黑體（受 `;` `}` 邊界約束，允許多行 font stack；targeting 真正同 selector 混搭；Latin Source Serif 4 / Inter 已移除避免方案 D 誤觸）"
+        },
+        {
+          "type": "regex",
+          "pattern": "font-family\\s*:[^;}]*\\b(Noto Sans TC|思源黑體|Gothic)\\b[^;}]*\\b(Noto Serif TC|思源宋體|宋體|Mincho)\\b",
+          "flags": "i",
+          "description": "順序：同一個 font-family declaration 內 CJK 黑體 → CJK 明體（反向順序場景）"
+        }
+      ],
+      "min_count": 1,
+      "remediation": "中文界基本法則：襯線體配明體、無襯線體配黑體。同頁混搭明體標題 + 黑體內文違反 justfont 等權威。建議改用方案 B（全黑體 + 字重對比，consulting-mono-sans.css）；若主受眾為英文用戶才考慮方案 A（mixed-bilingual.css）。詳見 fe-design v1.4 §24.2 與 trope-catalog §17"
+    },
+    {
+      "id": "trope-18",
+      "name": "全屬性過渡",
+      "name_en": "Transition All",
+      "severity": "warning",
+      "patterns": [
+        {
+          "type": "regex",
+          "pattern": "(?<![\\w-])transition(?:-property)?\\s*:[^;{}]*?(?<![\\w-])all(?![\\w-])",
+          "flags": "i",
+          "description": "CSS 過渡宣告含獨立 all 值；排除自訂屬性與相似名稱，包含逗號分隔的過渡清單"
+        },
+        {
+          "type": "regex",
+          "pattern": "(?<![^\\s\\\"'`!:])transition-all!?(?=[\\s\\\"'`]|$)",
+          "flags": "",
+          "description": "獨立 Tailwind utility，允許 variant 與 important；不匹配前後綴或斜線修飾字串"
+        }
+      ],
+      "min_count": 1,
+      "remediation": "明列過渡屬性，例如 transform 與 opacity"
+    },
+    {
+      "id": "trope-19",
+      "name": "缺少減少動態宣告（候選，需在瀏覽器切換減少動態設定確認）",
+      "name_en": "Reduced Motion Candidate",
+      "severity": "info",
+      "patterns": [
+        {
+          "type": "regex",
+          "pattern": "@keyframes\\b|(?<![\\w-])(?:animation|transition)\\s*:",
+          "flags": "i",
+          "description": "檔案含 keyframes、animation 或 transition 宣告"
+        }
+      ],
+      "min_count": 1,
+      "exclusion_pattern": "prefers-reduced-motion",
+      "exclusion_description": "同檔含 prefers-reduced-motion 即豁免；跨檔宣告與替代行為需人工確認",
+      "remediation": "候選，需在瀏覽器切換減少動態設定確認；提供減少動態的靜態或低動態替代行為"
+    }
+  ],
+  "severity_levels": ["critical", "warning", "info", "nit"],
+  "default_severity_min": "info"
+}

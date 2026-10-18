@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AppPhone Demo — 3 Screen Flow</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;background:#f0f2f5;padding:40px;color:#1a1a2e}
+h1{font-size:24px;margin-bottom:4px}
+.subtitle{font-size:13px;color:#666;margin-bottom:32px}
+.demo-area{display:flex;gap:40px;flex-wrap:wrap;align-items:flex-start}
+.phone-wrapper{flex-shrink:0}
+.log-panel{flex:1;min-width:300px;max-width:500px;background:#fff;border-radius:12px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.log-panel h3{font-size:14px;margin-bottom:8px;color:#666}
+#event-log{font-family:'SF Mono',Menlo,monospace;font-size:12px;line-height:1.8;max-height:400px;overflow-y:auto;color:#333}
+#event-log .entry{padding:2px 0;border-bottom:1px solid #f0f0f0}
+#event-log .ts{color:#999;margin-right:8px}
+
+.ios-frame{
+  width:375px;background:#000;border-radius:44px;padding:14px;
+  box-shadow:0 20px 60px rgba(0,0,0,.25),inset 0 0 0 2px #333;
+}
+.ios-frame__notch{
+  width:120px;height:28px;background:#000;border-radius:0 0 16px 16px;
+  margin:0 auto 8px;position:relative;z-index:10;
+}
+.ios-frame__screen{
+  background:#fff;border-radius:32px;overflow:hidden;height:680px;
+  display:flex;flex-direction:column;
+}
+.ios-frame__status-bar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 24px;font-size:12px;font-weight:600;color:#1a1a2e;
+}
+
+.screen{flex:1;display:flex;flex-direction:column;overflow-y:auto}
+.screen-login{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;justify-content:center;align-items:center;gap:20px}
+.screen-login h2{font-size:28px;font-weight:700}
+.screen-login .form{display:flex;flex-direction:column;gap:12px;width:280px}
+.screen-login input{padding:12px 16px;border:none;border-radius:8px;font-size:15px;background:rgba(255,255,255,.9)}
+.screen-login button{padding:14px;border:none;border-radius:8px;background:#fff;color:#764ba2;font-size:16px;font-weight:700;cursor:pointer}
+
+.screen-home{background:#f8fafc;padding:20px}
+.screen-home h2{font-size:22px;margin-bottom:16px}
+.screen-home .card-list{display:flex;flex-direction:column;gap:12px}
+.screen-home .card{background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.06);cursor:pointer;transition:transform .15s}
+.screen-home .card:hover{transform:translateY(-2px)}
+.screen-home .card h3{font-size:16px;margin-bottom:4px}
+.screen-home .card p{font-size:13px;color:#666}
+
+.screen-detail{background:#fff;padding:20px}
+.screen-detail .back-btn{font-size:14px;color:#667eea;cursor:pointer;margin-bottom:16px;display:inline-block}
+.screen-detail h2{font-size:20px;margin-bottom:12px}
+.screen-detail .info-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f0f0f0;font-size:14px}
+.screen-detail .info-row .label{color:#666}
+.screen-detail .info-row .value{font-weight:600}
+
+.nav-bar{display:flex;gap:4px;padding:8px 12px;justify-content:center;flex-wrap:wrap}
+.nav-bar button{padding:8px 18px;border-radius:8px;border:1px solid #ddd;background:#f5f5f5;font-size:13px;cursor:pointer;font-family:inherit}
+.nav-bar button.active{background:#667eea;color:#fff;border-color:#667eea}
+
+.breadcrumb{display:flex;gap:6px;padding:8px 16px;font-size:12px;color:#888}
+.breadcrumb .crumb{cursor:pointer;text-decoration:underline}
+.breadcrumb .crumb.current{cursor:default;text-decoration:none;font-weight:600;color:#333}
+.breadcrumb .sep{opacity:.5}
+</style>
+</head>
+<body>
+
+<h1>AppPhone Demo</h1>
+<p class="subtitle">app_phone.jsx + ios_frame — 3 screen flow (Login → Home → Detail) with navigation state management</p>
+
+<div class="demo-area">
+  <div class="phone-wrapper" id="app-root"></div>
+  <div class="log-panel">
+    <h3>Navigation Events</h3>
+    <div id="event-log"></div>
+  </div>
+</div>
+
+<script>
+const screens = [
+  { id: 'login', label: '登入' },
+  { id: 'home', label: '首頁' },
+  { id: 'detail', label: '詳情' },
+];
+
+let currentId = 'login';
+let history = ['login'];
+const logEl = document.getElementById('event-log');
+
+function logEvent(msg) {
+  const entry = document.createElement('div');
+  entry.className = 'entry';
+  const ts = new Date().toLocaleTimeString('zh-TW', { hour12: false });
+  entry.innerHTML = `<span class="ts">${ts}</span>${msg}`;
+  logEl.prepend(entry);
+}
+
+function goto(targetId) {
+  if (!screens.find(s => s.id === targetId)) return;
+  const prev = currentId;
+  currentId = targetId;
+  history = [...history, targetId];
+  logEvent(`goto: ${prev} → ${targetId} (history: [${history.join(', ')}])`);
+  render();
+}
+
+function back() {
+  if (history.length <= 1) return;
+  const prev = currentId;
+  history = history.slice(0, -1);
+  currentId = history[history.length - 1];
+  logEvent(`back: ${prev} → ${currentId} (history: [${history.join(', ')}])`);
+  render();
+}
+
+function reset() {
+  const prev = currentId;
+  currentId = 'login';
+  history = ['login'];
+  logEvent(`reset: ${prev} → login`);
+  render();
+}
+
+function renderScreen() {
+  if (currentId === 'login') {
+    return `<div class="screen screen-login">
+      <h2>Welcome</h2>
+      <div class="form">
+        <input type="text" placeholder="帳號" value="示範帳號" readonly>
+        <input type="password" placeholder="密碼" value="••••••" readonly>
+        <button onclick="goto('home')">登入</button>
+      </div>
+    </div>`;
+  }
+  if (currentId === 'home') {
+    return `<div class="screen screen-home">
+      <h2>首頁</h2>
+      <div class="card-list">
+        <div class="card" onclick="goto('detail')">
+          <h3>訂單 #2847</h3>
+          <p>台北 → 高雄，預計 05/03 送達</p>
+        </div>
+        <div class="card" onclick="goto('detail')">
+          <h3>訂單 #2846</h3>
+          <p>新竹 → 台中，已完成配送</p>
+        </div>
+        <div class="card" onclick="goto('detail')">
+          <h3>訂單 #2845</h3>
+          <p>桃園 → 台南，處理中</p>
+        </div>
+      </div>
+    </div>`;
+  }
+  if (currentId === 'detail') {
+    return `<div class="screen screen-detail">
+      <span class="back-btn" onclick="back()">← 返回</span>
+      <h2>訂單 #2847</h2>
+      <div class="info-row"><span class="label">出發地</span><span class="value">台北</span></div>
+      <div class="info-row"><span class="label">目的地</span><span class="value">高雄</span></div>
+      <div class="info-row"><span class="label">狀態</span><span class="value">運送中</span></div>
+      <div class="info-row"><span class="label">預計到達</span><span class="value">2026-05-03</span></div>
+      <div class="info-row"><span class="label">承運商</span><span class="value">黑貓宅急便</span></div>
+    </div>`;
+  }
+  return '';
+}
+
+function renderBreadcrumb() {
+  return history.map((id, i) => {
+    const screen = screens.find(s => s.id === id);
+    const isCurrent = i === history.length - 1;
+    const sep = i > 0 ? '<span class="sep">›</span>' : '';
+    if (isCurrent) {
+      return `${sep}<span class="crumb current">${screen?.label || id}</span>`;
+    }
+    const idx = i;
+    return `${sep}<span class="crumb" onclick="history=[history.slice(0,${idx + 1}).join(',')].join(',').split(',');currentId='${id}';logEvent('breadcrumb: jump to ${id}');render()">${screen?.label || id}</span>`;
+  }).join('');
+}
+
+function renderNav() {
+  return screens.map(s =>
+    `<button class="${s.id === currentId ? 'active' : ''}" onclick="goto('${s.id}')">${s.label}</button>`
+  ).join('');
+}
+
+function render() {
+  const canGoBack = history.length > 1;
+  document.getElementById('app-root').innerHTML = `
+    <div class="ios-frame">
+      <div class="ios-frame__notch"></div>
+      <div class="ios-frame__screen">
+        <div class="ios-frame__status-bar">
+          <span>9:41</span>
+          <span>⚡ 100%</span>
+        </div>
+        <div class="breadcrumb">${renderBreadcrumb()}</div>
+        ${renderScreen()}
+        <div class="nav-bar">${renderNav()}</div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:12px;font-size:12px;color:#888">
+      <button onclick="reset()" style="padding:6px 16px;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer;font-size:12px">Reset</button>
+      <span style="margin-left:8px">canGoBack: ${canGoBack}</span>
+      <span style="margin-left:8px">history: [${history.join(', ')}]</span>
+    </div>
+  `;
+}
+
+logEvent('init: screen=login');
+render();
+</script>
+</body>
+</html>
