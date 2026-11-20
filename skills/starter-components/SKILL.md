@@ -17,7 +17,7 @@ description: 前端骨架與設計系統倉庫：deck／canvas／裝置外框／
    - `tech-dark/`（深色科技 Linear/Vercel 風）
    - `editorial-minimal/`（白底明體年報學術風）
    - `chenxi-liuli-light/`（晨曦琉璃淺色變體）
-3. **`craft/`** — 模組化品質規則（v1.7 P9.8）：`anti-ai-slop` / `typography` / `color` / `motion` / `taste-layout`，DESIGN.md 透過 `craft.requires` 宣告式引用
+3. **`craft/`** — 模組化品質規則（v1.7 P9.8）：`anti-ai-slop` / `typography` / `color` / `motion` / `taste-layout` / `interaction`，DESIGN.md 透過 `craft.requires` 宣告式引用
 4. **`design-tokens-presets/`** — fe-design v1.4 §24.2 中文字體配對 4 套，加 1 套顧問簡報參數，共 5 個 CSS preset：
    - `consulting-mono-sans.css`（方案 B：全黑體 + 字重對比，⭐ 中文簡報通用預設）
    - `editorial-serif.css`（方案 C：全明體 + 字重對比，年報/學術派）
