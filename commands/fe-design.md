@@ -1,5 +1,5 @@
 ---
-description: 前端設計 pipeline：簡報（deck）、網頁（page）、應用介面（app）、設計系統（system）、改版遷移（migrate）五種模式，七階段含兩次人審，交付前跑 anti-slop 掃描與渲染後檢查。要做簡報、頁面、介面或設計系統時使用；單頁白話說明可改用外部的 eli5 技能（anthropics/claude-plugins-community，選用）。
+description: 前端設計 pipeline：簡報（deck）、網頁（page）、應用介面（app）、設計系統（system）、改版遷移（migrate）五種模式，七階段含兩次人審，交付前跑去 AI 味（anti-slop）掃描與渲染後檢查。要做簡報、頁面、介面或設計系統時使用；單頁白話說明可改用外部的 eli5 技能（anthropics/claude-plugins-community，選用）。
 allowed-tools:
   - Bash
   - Read
@@ -199,8 +199,8 @@ allowed-tools:
 | 類型 | 判定依據 | mode 預設 | 套用的品質規則 |
 |---|---|---|---|
 | `showcase` 展示型 | 主要任務是理解敘事、認識品牌、閱讀提案或活動內容 | deck、page | 共同四模組＋`taste-layout` |
-| `utility` 實用型 | 主要任務是查詢、比較、編輯、監控或反覆操作 | app、system、migrate | 共同四模組 |
-| `mixed` 混合 | 同一頁有敘事區與工作區 | 依頁面判定 | 共同四模組；`taste-layout` 只作用於明列的展示區 |
+| `utility` 實用型 | 主要任務是查詢、比較、編輯、監控或反覆操作 | app、system、migrate | 共同四模組＋`interaction` |
+| `mixed` 混合 | 同一頁有敘事區與工作區 | 依頁面判定 | 共同四模組；`taste-layout` 只作用於明列的展示區，`interaction` 只作用於明列的工作區 |
 
 邊界：企業網站不等於實用型（公司介紹是展示，登入後的報表才是實用）；簡報屬展示型，但仍受投影字級、固定畫布與匯出限制，不套網站的區塊間距；設計系統與改版依它服務的頁面判定。
 
@@ -248,7 +248,7 @@ allowed-tools:
 
 **跳過條件**：已有明確風格參考 / 使用者已說清方向 / 小修改（Visual Thesis 不受跳過條件影響，deck/page mode 必交）
 
-#### 客戶素材盤點（試行，展示型 deck/page）
+#### 客戶素材盤點（試行，展示型 deck/page；app mode 另見本節末）
 
 立視覺主張之前，先從已提供的資料列出這個客戶或這堂課才有的東西。來源：taste-skill v2 盤點步驟。
 
@@ -259,6 +259,11 @@ allowed-tools:
 5. **試行範圍**：先用在下一份課程簡報，效果寫進製作紀錄後再定稿。固定色盤與字體不受影響，盤點只影響案例、圖解、母題與敘事。
 
 **輸出**：併入 `aesthetic-direction.md`，放在 Visual Thesis 段之前。
+
+**app mode 的業務物件盤點**：不套上面的隱喻、母題、替換測試與試行範圍，只盤點三件，寫進 DESIGN.md：
+1. 畫面處理的業務物件與欄位，數值附單位。
+2. 客戶的專有用語：標籤與空白狀態用「待客戶回覆」「停機中」這類用語，不用「項目」「紀錄」「狀態」這類通用名詞。
+3. 能支援工作的元件（例如能源的用電流向、物業的待處理報修佇列）。不要求每個產品都發明獨有元件；平台色票與字體已固定的專案照平台，不另從產品世界取底色與字體。
 
 #### Visual Thesis（v1.8 P10.1，deck/page mode 必交）
 
@@ -276,12 +281,13 @@ allowed-tools:
 
 ### [3/7] 📐 設計系統（v1.3.1 §19 mode-conditional）
 
-#### 資料頁設計依據預載（v1.8.4，page/app mode 條件式）
+#### 資料頁設計依據預載（v1.8.4，page/app mode 條件式；依據 v1.1）
 page 或 app mode 且 brief 屬資料頁／儀表板／營運後台／清單頁（訊號詞：KPI、報表、趨勢、清單、篩選、匯出、後台、看板、dashboard）時觸發。
 寫 DESIGN.md 前先 `Read ~/.claude/skills/starter-components/references/info-dashboard-basis.md`。
-依其第一、二節設計密度型後台，加四項必備元素：數字等寬右對齊、資料新鮮度註記、漲跌與狀態不靠色塊當唯一訊號、清單頁四件套（期間切換、附筆數篩選、匯出、分頁）。
+依其第一、二節設計密度型後台，加五項必備元素：數字等寬右對齊、資料新鮮度註記、漲跌與狀態不靠色塊當唯一訊號、清單頁四件套（期間切換、附筆數篩選、匯出、分頁）、資料誠實（零與缺值、變化值、比較基準、合計對得上）。
+寫 DESIGN.md 前另在筆記寫三行：這個畫面先回答的問題、今天資料裡最需要注意的一件事、最常做的動作放在哪裡。驗收看資訊層級能不能讓使用者先找到答案，不規定哪個區塊面積最大。
 對外介紹頁走其第五節克制路線。
-EMS 模組畫面一律以 114 號規範為準，本依據只補充。
+專案若已有定版的模組級畫面規範（例如能源管理模組的畫面呈現規範），一律以該規範為準，本依據只補充。
 deck mode 不觸發。
 
 #### Mode 行為表（§19.2）
@@ -406,12 +412,12 @@ node ~/.claude/skills/starter-components/tools/fact-check.mjs \
 
 1. **Stage 2 開始前**：依 Stage 1 的用途類型載入預設模組。
 	1. 共同四模組，每個用途類型都載入：`anti-ai-slop`、`typography`、`color`、`motion`。
-	2. 展示型再加 `taste-layout`；混合頁的 `taste-layout` 只作用於明列的展示區；實用型不載入 `taste-layout`。
+	2. 展示型再加 `taste-layout`；實用型再加 `interaction`。混合頁兩者都載入，`taste-layout` 只作用於明列的展示區，`interaction` 只作用於明列的工作區。展示型不載入 `interaction`，實用型不載入 `taste-layout`。
 2. **Stage 3 寫完 DESIGN.md 後**：讀 `.design/DESIGN.md` frontmatter 的 `craft.requires`，補載預設清單以外的模組。`craft.requires` 只能增加，不能用空陣列或漏列移除共同四模組；名稱不在可用模組裡就顯示錯誤並停下，不安靜略過。
 3. 載入的規則在 Stage 5 實作與 Stage 6 品質檢核都是約束。模組裡寫明「只適用某類型或某輸出」的條款，照它的適用範圍執行。
 4. 載入 `motion` 不代表一定要做動畫；靜態輸出可標「不適用」，但要確認內容不依賴動畫才看得到。
 
-**可用模組**：`anti-ai-slop`（7 sins＋延伸）／`typography`（字體配對與層級）／`color`（對比度、語義色與表面層次）／`motion`（動態用途、時長、減少動態替代）／`taste-layout`（展示型的版面參考）
+**可用模組**：`anti-ai-slop`（7 sins＋延伸）／`typography`（字體配對與層級）／`color`（對比度、語義色與表面層次）／`motion`（動態用途、時長、減少動態替代）／`taste-layout`（展示型的版面參考）／`interaction`（互動決策：選項精簡、結尾優先、沿用慣例、事實紀錄不預填、提醒只講真實後果）
 **索引**：`~/.claude/skills/starter-components/craft/INDEX.md`
 
 **C1 摘要加欄位**：`usage_type`、`usage_type_reason`、`craft_rules_loaded`（實際載入清單）、`craft_not_applicable`（不適用的條款與理由）。
@@ -530,7 +536,7 @@ slide plan 標記插畫需求的頁面，可用你手邊的生圖工具產圖。
 
 1. **自動關卡** — 跑 `/anti-slop <project_root> --recursive`：
    - 第一層 `npx @google/design.md@0.1.1 lint`（8 條結構規則）
-   - 第二層 `scan.py`（19 條繁中 trope，含 v1.4 新增 trope-17 字體配對、v1.9 新增 trope-18 全屬性過渡與 trope-19 減少動態候選；4 條結構型規則列為未實作）
+   - 第二層 `scan.py`（22 條繁中 trope，含 v1.4 新增 trope-17 字體配對、v1.9 新增 trope-18 全屬性過渡與 trope-19 減少動態候選；4 條結構型規則列為未實作）
    - 第三層 `scan.py scan_seven_sins()`（7 sins P0 硬擋，v1.7 P9.4a/b 新增，CSS token-aware）：
      - Sin #1 Tailwind indigo escape（token-aware）
      - Sin #2 Two-stop trust gradient
@@ -541,7 +547,7 @@ slide plan 標記插畫需求的頁面，可用你手邊的生圖工具產圖。
      - Sin #7 Filler copy（lorem ipsum / placeholder）
    - 嚴重度 ≥ warning 直接列入待修；7 sins 為 P0 severity 必修
 2. **互動關卡** — （選用的外部技能，未安裝時略過此步）已安裝則 `Read ~/.claude/skills/gstack/design-review/SKILL.md` 並照做：
-   - **進入前必做**：`Read ~/.claude/skills/anti-slop-review/trope-catalog.md` 載入 19 條 trope 名稱+破解法到 working memory（取代 P3.8 原規劃的 symlink 機制 — design-review 為 AUTO-GENERATED 不可直接改檔）
+   - **進入前必做**：`Read ~/.claude/skills/anti-slop-review/trope-catalog.md` 載入 22 條 trope 名稱+破解法到 working memory（取代 P3.8 原規劃的 symlink 機制 — design-review 為 AUTO-GENERATED 不可直接改檔）
    - 對 critical / warning finding 做設計師視角複核（融合 trope catalog + 7 sins 視角）
    - 輸出 patch suggestion
    - **讀者先驗人審**（v1.8.3 P11.3，reader_prior = zero 時必做）：逐頁對照 DESIGN.md `## Terms` 表——每個術語同頁有白話說法、每頁新概念 ≤1、每頁有圖像位置、可見文字一眼讀完（建議 ≤40 CJK，不含標題；超過即拆頁或改圖）。不跑腳本，結果寫入 C2 摘要 `reader_prior_audit` 欄位（PASS，或待修頁碼清單）。
