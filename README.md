@@ -23,8 +23,8 @@ It is less useful for dashboards and data-heavy back-office screens. The pipelin
 |---|---|
 | `commands/fe-design.md` | The `/fe-design` command: a seven-stage pipeline with five modes (`deck`, `page`, `app`, `system`, `migrate`), a confirmation after every stage with two full review packages (in async mode, unanswered stages time out and move on), and resumable state in `.checkpoints/`. |
 | `commands/anti-slop.md` | The `/anti-slop` command: runs the checker below on a file or folder. |
-| `skills/anti-slop-review/` | Anti-slop checker: 19 tropes written for Traditional Chinese, 7 hard blocks, and a structural lint of `DESIGN.md` through Google's design.md linter. 135 tests. |
-| `skills/starter-components/` | Scaffolds (deck stage, device frames, charts, design canvas), 6 design-system starters, 4 Chinese–English font-pairing presets plus a consulting-deck token preset, craft rules, deck gates and export tools. |
+| `skills/anti-slop-review/` | Anti-slop checker: 22 tropes written for Traditional Chinese, 7 hard blocks, and a structural lint of `DESIGN.md` through Google's design.md linter. It reads CSS in `<style>` blocks, style attributes and styled-components or emotion template literals. 419 tests. |
+| `skills/starter-components/` | Scaffolds (deck stage, device frames, charts, design canvas), 6 design-system starters, 4 Chinese–English font-pairing presets plus a consulting-deck token preset, craft rules (including an interaction-decision module for working screens), deck gates and export tools. |
 | `skills/design-context-import/` | Extracts design tokens from an existing codebase (Tailwind, CSS variables, SCSS) into a `DESIGN.md`. |
 | `tools/` | `check_public.py` and `verify.sh`: the repository's own test runner and leak checker. |
 
@@ -33,7 +33,7 @@ It is less useful for dashboards and data-heavy back-office screens. The pipelin
 **Traditional Chinese anti-slop checks.** Most design checkers are written for English pages. These check things that go wrong in Traditional Chinese:
 
 - mixing a Ming (serif) face with a Hei (sans-serif) face without intent (`/anti-slop`);
-- generic AI page patterns, written up as 19 tropes with a "why it is slop" and a fix for each (`/anti-slop`);
+- generic AI page patterns, written up as 22 tropes with a "why it is slop" and a fix for each (`/anti-slop`);
 - simplified characters, judged character by character (not Big5 *and* converted by OpenCC), with an exception list. This check lives in the deck gates and in `tools/check_public.py`, not in `/anti-slop`.
 
 **Rendered QA for HTML slide decks.** Source scans cannot see what a projector shows, so stage 6 of `deck` mode runs four rendered gates, specified in [`references/rendered-qa.md`](skills/starter-components/references/rendered-qa.md) and carried out with Playwright: layout rhythm across a contact sheet, measured type size and overflow (at least 28 px for projected body text), a full screenshot review with a slop diagnostic, and a viewport-fit test at 1440×900 and 1280×800. Shipped tools support it: a visual diff between two deck versions, PDF and standalone-HTML export, a fact-check that locks names and numbers to their sources, and static deck gates for simplified characters, AI labels, signature rules and question-word headings (with negative test cases).
@@ -119,7 +119,7 @@ python3 skills/anti-slop-review/scan.py ./index.html
 
 ## What the anti-slop checker looks for
 
-A few of the 19 tropes, with figures from a 2026 study of 248 award-gallery sites by the [taste-skill](https://github.com/Leonxlnx/taste-skill) project (model-judged; the figures show what tends to appear together, not cause and effect):
+A few of the 22 tropes, with figures from a 2026 study of 248 award-gallery sites by the [taste-skill](https://github.com/Leonxlnx/taste-skill) project (model-judged; the figures show what tends to appear together, not cause and effect):
 
 | Pattern | Seen on high-scoring sites | Seen on low-scoring sites |
 |---|---|---|
@@ -189,14 +189,14 @@ Author: Kevin Du ([@NeriakTo](https://github.com/NeriakTo)). Issues and pull req
 |---|---|
 | `commands/fe-design.md` | `/fe-design` 指令：七階段流程、五種模式（`deck`、`page`、`app`、`system`、`migrate`）、每階段確認並有兩次完整審查包（async 模式逾時會自動往下走），中斷後可從 `.checkpoints/` 接續。 |
 | `commands/anti-slop.md` | `/anti-slop` 指令：對檔案或資料夾跑反樣板檢查。 |
-| `skills/anti-slop-review/` | 反樣板檢查器：19 條繁中寫法的樣板跡象、7 條硬擋，並用 Google 的 design.md 檢查器檢查 `DESIGN.md` 結構。135 項測試。 |
-| `skills/starter-components/` | 骨架元件（簡報舞台、裝置外框、圖表、設計畫布）、6 套設計系統起步模板、4 套中英字體配對與 1 套顧問簡報參數、品質規則、簡報關卡與匯出工具。 |
+| `skills/anti-slop-review/` | 反樣板檢查器：22 條繁中寫法的樣板跡象、7 條硬擋，並用 Google 的 design.md 檢查器檢查 `DESIGN.md` 結構；能讀懂 `<style>`、行內樣式與 React 樣式元件（styled-components、emotion）的樣板字串。419 項測試。 |
+| `skills/starter-components/` | 骨架元件（簡報舞台、裝置外框、圖表、設計畫布）、6 套設計系統起步模板、4 套中英字體配對與 1 套顧問簡報參數、品質規則（含實用型介面的互動決策規則）、簡報關卡與匯出工具。 |
 | `skills/design-context-import/` | 從既有程式碼（Tailwind、CSS 變數、SCSS）抽出設計參數，產生 `DESIGN.md`。 |
 | `tools/` | 倉庫自己的測試與外洩檢查：`check_public.py`、`verify.sh`。 |
 
 ### 特色
 
-- **繁體中文反樣板檢查**：`/anti-slop` 偵測中文明體與黑體混搭，19 條樣板跡象各附「為什麼是樣板」與修正方法；簡體字逐字判斷（非 Big5 且 OpenCC 會轉換才算，附例外表）在簡報關卡與 `tools/check_public.py` 裡，不在 `/anti-slop`。
+- **繁體中文反樣板檢查**：`/anti-slop` 偵測中文明體與黑體混搭，22 條樣板跡象各附「為什麼是樣板」與修正方法；簡體字逐字判斷（非 Big5 且 OpenCC 會轉換才算，附例外表）在簡報關卡與 `tools/check_public.py` 裡，不在 `/anti-slop`。
 - **HTML 簡報渲染後檢查**：`deck` 模式第 6 階段依 [`references/rendered-qa.md`](skills/starter-components/references/rendered-qa.md) 用 Playwright 跑四道關卡：整份縮圖總覽的版面節奏、字級與溢出量測（投影內文至少 28px）、全部截圖人工評審加樣板診斷、1440×900 與 1280×800 視窗是否超出版面。附帶工具：兩版簡報的視覺差異比對、PDF 與單檔 HTML 匯出、把人名與數字鎖回來源的事實檢查，以及檢查簡體字、AI 標註、署名規則、標題疑問詞的靜態關卡（附反例測試）。
 - **有檢查點的流程**：動工前先做客戶素材盤點（3 到 5 項這個客戶或這堂課才有的東西，寫出來源與用在哪一頁）、視覺主張（概念名、隱喻、三個母題、情緒曲線、首尾呼應）、美術合約與逐頁規劃；人工確認後才實作，品質檢核後再確認一次。
 

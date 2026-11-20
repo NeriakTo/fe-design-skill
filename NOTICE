@@ -22,6 +22,9 @@ It includes or adapts material from the following third-party projects:
      from the project.
    - The study figures quoted in skills/anti-slop-review/trope-catalog.md
      and README.md come from the project's references/research.md.
+   - The wording of items 3 and 5 in
+     skills/starter-components/references/info-dashboard-basis.md follows
+     the project's references/app-screens.md. No text is copied.
 
 3. awesome-design-md (VoltAgent/awesome-design-md)
    https://github.com/VoltAgent/awesome-design-md
