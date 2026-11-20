@@ -1,5 +1,5 @@
 ---
-description: Anti-slop review — 對指定路徑跑雙層 anti-slop scan（npx @google/design.md@0.1.1 lint 8 條結構規則 + 自家 19 條繁中 trope）
+description: 去 AI 味檢查（anti-slop review）— 對指定路徑跑雙層掃描（npx @google/design.md@0.1.1 lint 8 條結構規則 + 自家 22 條繁中 trope）
 allowed-tools:
   - Bash
   - Read
@@ -8,7 +8,7 @@ allowed-tools:
 
 # /anti-slop
 
-對指定路徑（HTML / JSX / DESIGN.md / 目錄）跑 fe-design v1.2 §7.2 雙層 anti-slop review。
+對指定路徑（HTML / JSX / DESIGN.md / 目錄）跑 fe-design v1.2 §7.2 雙層去 AI 味檢查（anti-slop review）。
 
 ## 用法
 
@@ -20,13 +20,13 @@ allowed-tools:
 - `/anti-slop ./index.html`
 - `/anti-slop .design/DESIGN.md --format json`
 - `/anti-slop ./components/ --recursive --severity-min warning`
-- `/anti-slop ./hero.jsx --skip-design-md-lint`（純跑 19 條 trope 不接 npx）
+- `/anti-slop ./hero.jsx --skip-design-md-lint`（純跑 22 條 trope 不接 npx）
 
 ## 行為
 
 1. 偵測 target 類型（DESIGN.md / HTML / JSX / 目錄）
 2. **第一層**（DESIGN.md 才跑）：shell out `npx @google/design.md@0.1.1 lint`，收 8 條結構 finding（broken-ref / contrast-ratio / missing-primary / missing-typography / missing-sections / orphaned-tokens / section-order / token-summary）
-3. **第二層**（任何檔都跑）：自家 `scan.py` 跑 19 條繁中 trope（彩色邊條 / 過度漸層 / 三欄 benefit / Inter 預設 / 全置中 / 過度圓角 / Emoji icon / gradient border / 浮誇詞彙 / 過量 hover / 假人名 / 假 dashboard / 堆疊 list / Hero 巨型標題 / 單字重 / 過度嵌套 / 明黑混搭 / 全屬性過渡 / 減少動態候選；其中 4 條結構型規則尚未實作，報告列為未檢查）
+3. **第二層**（任何檔都跑）：自家 `scan.py` 跑 22 條繁中 trope（彩色邊條 / 過度漸層 / 三欄 benefit / Inter 預設 / 全置中 / 過度圓角 / Emoji icon / gradient border / 浮誇詞彙 / 過量 hover / 假人名 / 假 dashboard / 堆疊 list / Hero 巨型標題 / 單字重 / 過度嵌套 / 明黑混搭 / 全屬性過渡 / 減少動態候選 / 奶油色底 / 彩色光暈 / 裝飾條紋候選；其中 4 條結構型規則尚未實作，報告列為未檢查）
 4. 合併輸出，按 severity 排序（critical > warning > info > nit）
 
 ## 預熱（首次使用）

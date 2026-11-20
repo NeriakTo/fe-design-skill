@@ -1,6 +1,6 @@
-<!-- anti-slop-skip: trope-01,trope-02,trope-03,trope-04,trope-05,trope-06,trope-07,trope-08,trope-09,trope-10,trope-11,trope-12,trope-13,trope-14,trope-15,trope-16,trope-17,trope-18,trope-19 -->
+<!-- anti-slop-skip: trope-01,trope-02,trope-03,trope-04,trope-05,trope-06,trope-07,trope-08,trope-09,trope-10,trope-11,trope-12,trope-13,trope-14,trope-15,trope-16,trope-17,trope-18,trope-19,trope-20,trope-21,trope-22 -->
 
-# Anti-slop Trope Catalog（19 條繁中重寫版）
+# Anti-slop Trope Catalog（22 條繁中重寫版）
 
 > 本目錄為繁體中文原創寫作，分類參考公開的設計資源。fe-design v1.4-short 同步版（§17 新增中文字體配對檢測）。
 >
@@ -12,7 +12,7 @@
 
 ## 01. 彩色邊條卡片（Colored Side Border Card）
 
-**特徵**：卡片左側一條彩色 border（1px~4px），右側內容不變。
+**特徵**：卡片左、右、上或行內起訖邊使用粗彩邊（至少 3px 或 0.2rem/em），同檔至少三筆。
 
 **為什麼是 slop**：AI 的「強調」直覺反應就是加彩邊。一個畫面常出現 4-6 個顏色不同的邊條，視覺嘈雜且分類意義稀薄。
 
@@ -28,7 +28,7 @@
 
 **破解法**：用背景色區塊（`bg-blue-50`）或留白排版取代彩邊；留白比顏色更有級別感。
 
-**偵測 hint**：regex `border-l-(2|4|8)\s.*\bborder-l-(blue|green|red|yellow|purple|pink|indigo)`
+**偵測 hint**：Tailwind 同側 border-l/t/r-N（N≥3）配對彩色 class；CSS 邊條簡寫由 css_value 判斷，支援 hex、var()、rgb(a)、hsl(a) 與 CSS 具名色。排除 border-bottom、分開寫的寬度屬性、透明及指定中性色名稱，min_count 維持 3。
 
 **Severity**：`warning`
 
@@ -49,7 +49,7 @@
 
 **研究觀察**：獲獎網站研究裡，漸層填色在高分網站占 22%、低分網站 52%（相關觀察，限制見文末「研究數字對照」）。
 
-**偵測 hint**：regex `from-\w+\s.*via-\w+\s.*to-\w+` 或 `linear-gradient.*,.*,.*,` 4+ stops
+**偵測 hint**：Tailwind from-via-to 或 CSS linear-gradient 4+ stops。regex 的 exclude_properties 逐筆排除 mask-image、-webkit-mask-image、mask、-webkit-mask 值內的漸層；同檔背景漸層照常計次，行號保留。
 
 **Severity**：`warning`
 
@@ -418,6 +418,65 @@ body, h1, h2, h3, button { font-family: Inter, sans-serif; font-weight: 400; }
 
 ---
 
+## 20. 奶油色底（Cream Background Candidate）
+
+**特徵**：background、background-color，或名稱含 bg、background、paper、surface、base 的 CSS 變數使用暖色淺底。
+
+**為什麼提示**：奶油底可能是預設風格，也可能符合咖啡等主題，只列候選，需人判斷。
+
+**範例（候選）**：
+```css
+background: #fdf3e2;
+--paper: #fdf6e3;
+background: rgba(255, 250, 242, 0.95);
+```
+
+**破解法**：核對背景色與內容、品牌的關係；有意採用時用 --skip-tropes trope-20 或檔內 skip 標記排除。
+
+**偵測 hint**：css_value 的 cream_background 將明示 hex、rgb(a)、hsl(a) 轉成 HSL，色相 30–60 度、亮度至少 90%、飽和度至少 20%；純白、灰白、偏粉排除。不解析變數引用。min_count=1，單一背景宣告就可能覆蓋整頁。
+
+**Severity**：`info`（候選，需人判斷）
+
+---
+
+## 21. 彩色光暈（Colored Glow Candidate）
+
+**特徵**：box-shadow、text-shadow 或 filter: drop-shadow() 的位移為 0 0、模糊至少 20px，使用彩色而非黑白灰。
+
+**為什麼提示**：大範圍彩色光暈容易變成裝飾預設，但也可能是狀態或品牌效果，需人工確認用途。
+
+**範例（候選）**：
+```css
+box-shadow: 0 0 40px rgba(124, 58, 237, 0.5);
+```
+
+**破解法**：確認用途，必要時降低模糊與彩度；刻意採用可跳過 trope-21。
+
+**偵測 hint**：css_value 的 colored_glow 支援多層陰影，每宣告最多計一次；明示色碼 RGB 最大最小差小於 16 視為灰，黑白灰具名色不算，未解析的 var() 不算。min_count=1。
+
+**Severity**：`info`（候選，需人判斷）
+
+---
+
+## 22. 裝飾條紋背景（Decorative Stripe Background Candidate）
+
+**特徵**：background 或 background-image 使用 repeating-linear-gradient 或 repeating-radial-gradient。
+
+**為什麼提示**：重複紋理可能增加雜訊，也可能服務主題或資料呈現，需人判斷。
+
+**範例（候選）**：
+```css
+background: repeating-linear-gradient(to bottom, transparent 0, transparent calc(12.5% - 4px), #5a3620 calc(12.5% - 4px), #5a3620 12.5%);
+```
+
+**破解法**：確認條紋與內容的關係，必要時改為單色背景；有意採用可跳過 trope-22。
+
+**偵測 hint**：regex 只看 background / background-image 宣告內的重複線性或放射漸層，不比對 mask 與自訂屬性。min_count=1。
+
+**Severity**：`info`（候選，需人判斷）
+
+---
+
 結構型樣式 trope-03、trope-13、trope-15、trope-16 尚未實作，文字與 JSON 報告會另列「未實作、未檢查」。trope-03 與 trope-16 的 regex 部分仍執行，不能把結構型未檢查解讀為通過。
 
 ## 研究數字對照（觀察不是規則）
@@ -442,7 +501,7 @@ body, h1, h2, h3, button { font-family: Inter, sans-serif; font-weight: 400; }
 | `info` | 風格偏好性 | 提示、不阻塞 |
 | `nit` | 雞毛蒜皮 | 略過或自動修 |
 
-19 條 trope 預設 severity 多為 `warning`，但 fe-design v1.2 雙層架構合併時可 local remap（例如 trope 04 預設 Inter 在「標準 dashboard」場景可降為 `nit`）。
+22 條 trope 預設 severity 多為 `warning`，但 fe-design v1.2 雙層架構合併時可 local remap（例如 trope 04 預設 Inter 在「標準 dashboard」場景可降為 `nit`）。
 
 ---
 
